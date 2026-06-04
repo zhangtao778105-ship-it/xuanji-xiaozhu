@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}玄机小筑{% endblock %}
+
+{% block content %}
+<div class="intro-card card fade-in">
+    <div class="greeting">{{ greeting }}</div>
+    <div class="priest-sign">— {{ priest_name }} 稽首</div>
+</div>
+
+<div class="menu-grid mt-24">
+    <a href="/iching" class="menu-item fade-in">
+        <span class="icon">🪙</span>
+        <span class="label">周易金钱卦</span>
+        <span class="desc">三枚铜钱，六爻成卦</span>
+    </a>
+    <a href="/guanyin" class="menu-item fade-in">
+        <span class="icon">🏮</span>
+        <span class="label">观音灵签</span>
+        <span class="desc">诚心求签，菩萨明示</span>
+    </a>
+    <a href="/daily" class="menu-item fade-in">
+        <span class="icon">📅</span>
+        <span class="label">每日运势</span>
+        <span class="desc">今日卦象，趋吉避凶</span>
+    </a>
+    <a href="/bazi" class="menu-item fade-in">
+        <span class="icon">🎋</span>
+        <span class="label">八字命盘</span>
+        <span class="desc">四柱推命，五行分析</span>
+    </a>
+    <a href="/liuren" class="menu-item fade-in">
+        <span class="icon">📖</span>
+        <span class="label">大六壬</span>
+        <span class="desc">三式之一，十二天将</span>
+    </a>
+    <a href="/fengshui" class="menu-item fade-in">
+        <span class="icon">🏠</span>
+        <span class="label">风水百科</span>
+        <span class="desc">八宅玄空，煞气化解</span>
+    </a>
+    <a href="/encyclopedia" class="menu-item fade-in">
+        <span class="icon">📚</span>
+        <span class="label">玄学百科</span>
+        <span class="desc">五行八卦，奇门梅花</span>
+    </a>
+    <a href="/search" class="menu-item fade-in">
+        <span class="icon">🔍</span>
+        <span class="label">搜索</span>
+        <span class="desc">全文检索，直达所需</span>
+    </a>
+</div>
+{% endblock %}

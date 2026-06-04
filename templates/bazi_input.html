@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}八字命盘 — 输入{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🎋 八字命盘</h1>
+<p class="page-subtitle">请输入出生年月日时，排定四柱命盘</p>
+
+<div class="card">
+    <div class="card-title">出生信息</div>
+    <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:16px">
+        八字排盘讲究精确，时辰差一刻，命盘可能全然不同。若不确定时辰，可告知大概。
+        支持1900-2100年间的日期。
+    </p>
+
+    <form action="/bazi/result" method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">出生年份</label>
+                <input class="form-input" type="number" name="year" value="1990" min="1900" max="2100" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">月份</label>
+                <select class="form-select" name="month" required>
+                    {% for m in range(1,13) %}
+                    <option value="{{ m }}" {% if m == 6 %}selected{% endif %}>{{ m }}月</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">日期</label>
+                <select class="form-select" name="day" required>
+                    {% for d in range(1,32) %}
+                    <option value="{{ d }}" {% if d == 15 %}selected{% endif %}>{{ d }}日</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">时辰</label>
+                <select class="form-select" name="hour" required>
+                    <option value="0">子时 (23:00-01:00)</option>
+                    <option value="1">丑时 (01:00-03:00)</option>
+                    <option value="3">寅时 (03:00-05:00)</option>
+                    <option value="5">卯时 (05:00-07:00)</option>
+                    <option value="7">辰时 (07:00-09:00)</option>
+                    <option value="9">巳时 (09:00-11:00)</option>
+                    <option value="11">午时 (11:00-13:00)</option>
+                    <option value="12" selected>午时 (11:00-13:00) — 正午</option>
+                    <option value="13">未时 (13:00-15:00)</option>
+                    <option value="15">申时 (15:00-17:00)</option>
+                    <option value="17">酉时 (17:00-19:00)</option>
+                    <option value="19">戌时 (19:00-21:00)</option>
+                    <option value="21">亥时 (21:00-23:00)</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">性别</label>
+            <select class="form-select" name="gender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large mt-16">排定命盘</button>
+    </form>
+</div>
+
+<div class="card mt-16">
+    <div class="card-title">八字小知识</div>
+    <ul style="color:var(--text-light);font-size:0.8rem;padding-left:20px;line-height:1.8">
+        <li><strong>年柱</strong>：以立春为界，立春前出生属上一年</li>
+        <li><strong>月柱</strong>：以节气为界，非农历初一</li>
+        <li><strong>日柱</strong>：以公历日期累积天数推算</li>
+        <li><strong>时柱</strong>：以子时（23:00）为一日之始</li>
+        <li><strong>大运</strong>：阳男阴女顺排，阴男阳女逆排</li>
+    </ul>
+</div>
+{% endblock %}

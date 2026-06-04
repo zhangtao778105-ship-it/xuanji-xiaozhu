@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ topic }} — 玄学百科{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if is_search %}🔍 {{ topic }}{% else %}📚 {{ topic }}{% endif %}
+</h1>
+
+<!-- 搜索栏 -->
+<div class="search-bar">
+    <form action="/search" method="GET" style="display:flex;gap:8px;width:100%">
+        <input class="form-input" type="text" name="q" placeholder="搜索玄学知识..." value="{{ topic if is_search else '' }}" style="flex:1">
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+</div>
+
+<!-- 分类内容（通用渲染） -->
+{% if content %}
+<div class="card fade-in">
+    <div class="card-title">{{ topic }}</div>
+    {% if content is mapping %}
+        {% for key, val in content.items() %}
+            {% if key == '概述' %}
+                <div class="detail-section">
+                    <p style="font-size:0.9rem;line-height:1.8">{{ val }}</p>
+                </div>
+            {% elif val is mapping and val.keys()|list|length > 0 %}
+                <div class="detail-section">
+                    <h3 style="color:var(--gold);margin:12px 0 8px;font-size:0.95rem">{{ key }}</h3>
+                    {% if '_吉凶' not in key and '_五行' not in key and '_阴阳' not in key
+                          and '_卦德' not in key and '_含义' not in key
+                          and '_生肖' not in key and '_月份' not in key and '_时辰' not in key
+                          and '_方位' not in key and '_颜色' not in key
+                          and '_所属' not in key and '_类象' not in key
+                          and '_元龙' not in key and '_度数' not in key %}
+                        <div class="detail-grid">
+                            {% for sub_key, sub_val in val.items() %}
+                            {% if sub_val is string %}
+                            <div class="detail-item">
+                                <span class="key">{{ sub_key }}</span>
+                                <span class="val" style="font-size:0.85rem">{{ sub_val[:200] }}</span>
+                            </div>
+                            {% elif sub_val is mapping %}
+                            <div class="detail-item">
+                                <span class="key">{{ sub_key }}</span>
+                                <span class="val" style="font-size:0.8rem">
+                                    {% for sk, sv in sub_val.items() %}
+                                    <span style="font-size:0.75rem;color:var(--text-light)">{{ sk }}:</span> {{ sv }}{% if not loop.last %}<br>{% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="detail-grid">
+                            {% for sub_key, sub_val in val.items() %}
+                            <div class="detail-item">
+                                <span class="key">{{ sub_key }}</span>
+                                <span class="val" style="font-size:0.85rem">
+                                    {% if sub_val is string %}{{ sub_val[:120] }}
+                                    {% elif sub_val is mapping %}
+                                        {% for sk, sv in sub_val.items() %}
+                                        <span style="font-size:0.75rem;color:var(--text-light)">{{ sk }}:</span> {{ sv }}{% if not loop.last %} | {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% elif val is string %}
+                <div class="detail-section">
+                    <h3 style="color:var(--gold);margin:8px 0 4px;font-size:0.9rem">{{ key }}</h3>
+                    <p style="font-size:0.85rem;color:var(--text);line-height:1.8">{{ val[:500] }}</p>
+                </div>
+            {% elif val is iterable and val is not string %}
+                <div class="detail-section">
+                    <h3 style="color:var(--gold);margin:8px 0 4px;font-size:0.9rem">{{ key }}</h3>
+                    <ul style="color:var(--text-light);font-size:0.85rem;padding-left:20px;line-height:1.8">
+                        {% for item in val %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- 搜索结果 -->
+{% if results %}
+<div class="search-results mt-16">
+    {% if is_search %}
+        {% for source, items in results.items() %}
+            {% if source != 'query' and items %}
+            <div class="card mt-16">
+                <div class="card-title">{{ {'encyclopedia':'玄学百科','fengshui':'风水百科','liuren':'大六壬'}.get(source, source) }}</div>
+                {% for item in items %}
+                <div class="search-hit">
+                    <div class="hit-category">{{ item.category }}</div>
+                    <div class="hit-path">{{ item.path }}</div>
+                    <div class="hit-content">{{ item.content[:150] }}{% if item.content|length > 150 %}...{% endif %}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        {% set has_results = namespace(found=false) %}
+        {% for source, items in results.items() if source != 'query' %}
+            {% if items %}{% set has_results.found = true %}{% endif %}
+        {% endfor %}
+        {% if not has_results.found %}
+        <div class="card mt-16 text-center">
+            <p style="color:var(--text-light)">未找到与"{{ topic }}"相关的结果。请尝试其他关键词。</p>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="card mt-16">
+            <div class="card-title">相关条目</div>
+            {% for item in results %}
+            <div class="search-hit">
+                <div class="hit-category">{{ item.category }}</div>
+                <div class="hit-path">{{ item.path }}</div>
+                <div class="hit-content">{{ item.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="text-center mt-24">
+    <a href="/encyclopedia" class="btn btn-secondary">百科首页</a>
+    <a href="/" class="btn btn-secondary" style="margin-left:8px">返回首页</a>
+</div>
+{% endblock %}

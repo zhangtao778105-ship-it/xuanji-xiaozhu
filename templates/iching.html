@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}周易金钱卦{% endblock %}
+
+{% block content %}
+<h1 class="page-title">☯ 周易金钱卦</h1>
+<p class="page-subtitle">三枚铜钱掷六次，本卦变卦定吉凶</p>
+
+<div class="card">
+    <div class="card-title">起卦须知</div>
+    <p style="color:var(--text-light);font-size:0.9rem">
+        请先凝神静气，心中默念所问之事。待心平气和，方可掷币起卦。
+        三枚铜钱同时掷出，正面为阳（3分），背面为阴（2分）。
+        总分：6=老阴（变爻），7=少阳，8=少阴，9=老阳（变爻）。
+    </p>
+</div>
+
+<div class="toss-area card" id="tossArea">
+    <div class="coin-display" id="coinArea"></div>
+    <div class="yao-progress" id="yaoProgress"></div>
+    <div id="resultDisplay"></div>
+    <button class="btn btn-primary btn-large mt-16" id="tossBtn">掷第一次（共六次）</button>
+    <form id="tossForm" style="display:none"></form>
+</div>
+
+<div class="card mt-16">
+    <div class="card-title">解卦规则 <span style="font-size:0.8rem;color:var(--text-light)">—— 朱熹《易学启蒙》</span></div>
+    <ul style="color:var(--text-light);font-size:0.8rem;padding-left:20px;line-height:1.8">
+        <li>0变爻 → 本卦卦辞</li>
+        <li>1变爻 → 该爻爻辞</li>
+        <li>2变爻 → 两爻辞，以上爻为主</li>
+        <li>3变爻 → 本卦+变卦卦辞</li>
+        <li>4变爻 → 变卦不变爻辞，以下爻为主</li>
+        <li>5变爻 → 变卦不变爻辞</li>
+        <li>6变爻 → 乾坤用九/用六，余用变卦卦辞</li>
+    </ul>
+</div>
+{% endblock %}

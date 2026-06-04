@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}风水百科{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🏠 风水百科</h1>
+<p class="page-subtitle">八宅 · 玄空 · 形法 · 煞气化解</p>
+
+<!-- 八宅 -->
+<div class="card">
+    <div class="card-title">八宅风水</div>
+    <p style="color:var(--text-light);font-size:0.85rem">{{ bazhai.概述 }}</p>
+
+    <div class="detail-grid mt-12">
+        <div class="detail-item">
+            <span class="key text-green">东四宅</span>
+            <span class="val">{{ bazhai.东四宅.members|join('、') }}</span>
+            <span style="font-size:0.75rem;color:var(--text-light)">{{ bazhai.东四宅.description }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="key text-gold">西四宅</span>
+            <span class="val">{{ bazhai.西四宅.members|join('、') }}</span>
+            <span style="font-size:0.75rem;color:var(--text-light)">{{ bazhai.西四宅.description }}</span>
+        </div>
+    </div>
+
+    <!-- 八星 -->
+    <h3 style="color:var(--gold);margin:16px 0 8px;font-size:0.95rem">八星吉凶</h3>
+    <div class="detail-grid">
+        {% for name, info in bazhai.八星.items() %}
+        <div class="detail-item">
+            <span class="key">
+                {{ name }}
+                <span class="badge {% if '吉' in info.吉凶 %}badge-green{% else %}badge-red{% endif %}">
+                    {{ info.吉凶 }}
+                </span>
+            </span>
+            <span class="val" style="font-size:0.8rem">{{ info.meaning }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 玄空飞星 -->
+<div class="card mt-16">
+    <div class="card-title">玄空飞星</div>
+    <p style="color:var(--text-light);font-size:0.85rem">{{ xuankong.概述 }}</p>
+
+    <h3 style="color:var(--gold);margin:12px 0 8px;font-size:0.9rem">九星</h3>
+    <div class="detail-grid">
+        {% for name, info in xuankong.九星.items() %}
+        <div class="detail-item">
+            <span class="key">{{ name }} · {{ info.name }}</span>
+            <span class="val" style="font-size:0.8rem">{{ info.类象 }}</span>
+            <span class="badge {% if info.吉凶 == '大吉' or info.吉凶 == '吉' %}badge-green{% else %}badge-red{% endif %}">
+                {{ info.吉凶 }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 形法 -->
+<div class="card mt-16">
+    <div class="card-title">形法风水 — 龙穴砂水向</div>
+    {% for key, info in xingfa.items() %}
+    {% if key != '概述' %}
+    <div class="accordion">
+        <button class="accordion-header">{{ info.name }} — {{ info.description[:40] }}...</button>
+        <div class="accordion-body">
+            <p>{{ info.description }}</p>
+            <p style="color:var(--gold);margin-top:8px">{{ info.口诀 }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- 煞气 -->
+<div class="card mt-16">
+    <div class="card-title">常见煞气及化解</div>
+    {% for name, info in shaqi.items() %}
+    <div class="accordion">
+        <button class="accordion-header">{{ name }} <span style="color:var(--cinnabar);font-size:0.8rem">煞</span></button>
+        <div class="accordion-body">
+            <p><strong>说明：</strong>{{ info.description }}</p>
+            <p style="color:var(--gold);margin-top:8px"><strong>化解：</strong>{{ info.化解 }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 常见宜忌 -->
+<div class="card mt-16">
+    <div class="card-title">常见风水宜忌</div>
+    {% for area, items in yiji.items() %}
+    <div class="detail-section">
+        <h3>{{ area }}</h3>
+        <ul style="color:var(--text-light);font-size:0.85rem;padding-left:20px;line-height:1.8">
+            {% for item in items %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-24">
+    <a href="/" class="btn btn-secondary">返回首页</a>
+</div>
+{% endblock %}

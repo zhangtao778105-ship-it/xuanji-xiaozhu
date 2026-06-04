@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}每日运势{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📅 每日运势</h1>
+<p class="page-subtitle">{{ today.strftime('%Y年%m月%d日') }} · {{ fortune.day_ganzhi }}日</p>
+
+<div class="intro-card card">
+    <p class="greeting" style="font-size:0.95rem">{{ intro }}</p>
+</div>
+
+<!-- 今日卦象 -->
+<div class="card mt-16">
+    <div class="card-title">
+        今日卦象：{{ fortune.hexagram.name_cn }}
+        <span class="badge {% if fortune.level == '吉' %}badge-green{% elif fortune.level == '凶' %}badge-red{% else %}badge-gray{% endif %}">
+            {{ fortune.level }}
+        </span>
+    </div>
+
+    <div class="hexagram-viz">
+        {% set trigrams = {'乾':'☰','坤':'☷','震':'☳','巽':'☴','坎':'☵','离':'☲','艮':'☶','兑':'☱'} %}
+        <div style="font-size:3rem;color:var(--gold);margin:12px 0">
+            {{ trigrams.get(fortune.hexagram.upper_trigram, '?') }}{{ trigrams.get(fortune.hexagram.lower_trigram, '?') }}
+        </div>
+        <p style="color:var(--text-light);font-size:0.85rem">
+            {{ fortune.hexagram.upper_trigram }}上 {{ fortune.hexagram.lower_trigram }}下
+        </p>
+    </div>
+
+    <div class="judgment-block {% if fortune.level == '吉' %}judgment-auspicious{% elif fortune.level == '凶' %}judgment-inauspicious{% else %}judgment-neutral{% endif %}">
+        {{ fortune.fortune }}
+    </div>
+</div>
+
+<!-- 大象辞 -->
+<div class="card mt-16">
+    <div class="card-title">卦象指引</div>
+    <div class="interp-block">
+        <div class="interp-source">大象辞</div>
+        <div class="interp-text">{{ fortune.da_xiang }}</div>
+    </div>
+</div>
+
+<!-- 卦辞 -->
+<div class="card mt-16">
+    <div class="card-title">卦辞</div>
+    <p class="interp-text">{{ fortune.hexagram.gua_ci }}</p>
+</div>
+
+<!-- 凤年真人详解 -->
+<div class="card mt-16">
+    <div class="card-title">凤年真人详解</div>
+    <div class="interp-block">
+        <div class="interp-text" style="line-height:2.2">
+            {% set level = fortune.level %}
+            今日{{ fortune.day_ganzhi }}日，卦得<strong>{{ fortune.hexagram.name_cn }}</strong>（{{ fortune.hexagram.lower_trigram }}下{{ fortune.hexagram.upper_trigram }}上）。
+            {{ fortune.hexagram.da_xiang_ci }}<br><br>
+
+            {% if level == '吉' %}
+            今日运势总体顺遂，天时人和俱在。卦象显示今日宜主动出击，把握机会。在事业上，思路清晰，决策准确，利于谈判签约和重要决策。人际关系和谐，易得贵人相助。
+            <br><br><strong>财运：</strong>财运尚可，正财稳定，偏财小有收获。但不建议大额投资或冒险行动。
+            <br><strong>感情：</strong>情感运势平顺，有伴者相处融洽；单身者今日有机会邂逅良缘。
+            <br><strong>健康：</strong>精神状态良好，但注意不要过度劳累。
+            <br><strong>颜色：</strong>宜穿戴金色、黄色系的服饰，有助于提升气场。
+            <br><strong>方位：</strong>利西北方。
+            <br><strong>宜：</strong>谈判、签约、出行、拜访贵人。
+            <br><strong>忌：</strong>冲动消费、与人争执。
+            {% elif level == '凶' %}
+            今日运势有阻，卦象显示宜守不宜攻。遇事不可冲动，三思而后行。在事业上，可能会有意料之外的变数或阻碍，宜保持冷静，暂时退守，以待时机。
+            <br><br><strong>财运：</strong>财运不佳，不宜投资，注意开支控制，避免不必要的消费。
+            <br><strong>感情：</strong>易有口舌之争，需多一分耐心和包容。单身者不宜急于表白。
+            <br><strong>健康：</strong>注意肠胃不适和头痛。宜早睡早起，避免熬夜。
+            <br><strong>颜色：</strong>宜穿戴黑色、蓝色系的服饰，有助于化解不利。
+            <br><strong>方位：</strong>避免正南方。
+            <br><strong>宜：</strong>低调行事、整理内务、学习充电。
+            <br><strong>忌：</strong>重大决策、投资、远行、与他人发生冲突。
+            {% else %}
+            今日运势平稳，不惊不喜，平平淡淡。卦象显示宜守正持中，按部就班做好自己分内之事。没有大机遇，也没有大危机，是适合思考和规划的好日子。
+            <br><br><strong>财运：</strong>财运平稳，收支平衡。适合做财务规划，但不建议大动干戈。
+            <br><strong>感情：</strong>感情稳定，适合与伴侣或家人共度温馨时光。单身者保持现状即可。
+            <br><strong>健康：</strong>身体状况尚可，保持规律作息和适度运动。
+            <br><strong>颜色：</strong>宜穿戴白色、银色系的服饰，有助于提升运势。
+            <br><strong>方位：</strong>无明显吉凶方位。
+            <br><strong>宜：</strong>学习充电、整理收纳、健身运动。
+            <br><strong>忌：</strong>冒险投资、重要决策、远行。
+            {% endif %}
+            <br><br>
+            <em>天行有常，不为尧存，不为桀亡。运势仅为参考，道友自己的选择与行动才是决定命运的关键。福生无量天尊！</em>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-24">
+    <a href="/" class="btn btn-secondary">返回首页</a>
+</div>
+{% endblock %}

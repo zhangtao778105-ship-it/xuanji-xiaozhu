@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}观音灵签{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🏮 观音灵签</h1>
+<p class="page-subtitle">诚心默念所问，摇动签筒求签</p>
+
+<div class="card">
+    <div class="card-title">求签须知</div>
+    <p style="color:var(--text-light);font-size:0.9rem">
+        1. 先在心中默念所问之事，以及姓名、生辰、住址。<br>
+        2. 心诚则灵，切勿儿戏。<br>
+        3. 抽得签后，需掷筊请观音菩萨确认（一正一反为圣杯）。<br>
+        4. 若三次未得圣杯，此签仅供参考。
+    </p>
+</div>
+
+<div class="lot-draw-area card text-center" id="lotArea">
+    <div style="font-size:5rem;margin:20px 0" id="lotTube">🏮</div>
+    <p style="color:var(--text-light);margin-bottom:20px">签筒之中，百签待取</p>
+    <button class="btn btn-primary btn-large" id="drawBtn">摇动签筒 · 求取灵签</button>
+</div>
+
+<!-- 添加签筒摇动动画样式 -->
+<style>
+@keyframes tubeShake {
+    0%,100% { transform: rotate(0deg); }
+    10% { transform: rotate(-10deg); }
+    20% { transform: rotate(10deg); }
+    30% { transform: rotate(-8deg); }
+    40% { transform: rotate(8deg); }
+    50% { transform: rotate(-5deg); }
+    60% { transform: rotate(5deg); }
+    70% { transform: rotate(-3deg); }
+    80% { transform: rotate(3deg); }
+}
+.shake { animation: tubeShake 2s ease-out; }
+</style>
+{% endblock %}

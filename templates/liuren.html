@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}大六壬{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📖 大六壬</h1>
+<p class="page-subtitle">三式之一 · 占卜人事之王 · 完整排盘</p>
+
+<!-- 排盘输入 -->
+<div class="card">
+    <div class="card-title">起课排盘</div>
+    <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:16px">
+        输入年月日时，月将加时，天盘四课三传一气呵成。
+    </p>
+    <form action="/liuren/result" method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">年</label>
+                <input class="form-input" type="number" name="year" value="{{ today.year }}" min="1900" max="2100" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">月</label>
+                <select class="form-select" name="month" required>
+                    {% for m in range(1,13) %}
+                    <option value="{{ m }}" {% if m == today.month %}selected{% endif %}>{{ m }}月</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">日</label>
+                <select class="form-select" name="day" required>
+                    {% for d in range(1,32) %}
+                    <option value="{{ d }}" {% if d == today.day %}selected{% endif %}>{{ d }}日</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">时</label>
+                <select class="form-select" name="hour" required>
+                    <option value="0">子时 (23-01)</option>
+                    <option value="1">丑时 (01-03)</option>
+                    <option value="3">寅时 (03-05)</option>
+                    <option value="5">卯时 (05-07)</option>
+                    <option value="7">辰时 (07-09)</option>
+                    <option value="9">巳时 (09-11)</option>
+                    <option value="11">午时 (11-13)</option>
+                    <option value="13">未时 (13-15)</option>
+                    <option value="15">申时 (15-17)</option>
+                    <option value="17">酉时 (17-19)</option>
+                    <option value="19">戌时 (19-21)</option>
+                    <option value="21">亥时 (21-23)</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-large mt-12">起课排盘</button>
+    </form>
+</div>
+
+<!-- 概述 -->
+<div class="card mt-16">
+    <div class="card-title">大六壬概述</div>
+    <p style="font-size:0.9rem;line-height:1.8">{{ overview }}</p>
+</div>
+
+<!-- 十二天将 -->
+<div class="card mt-16">
+    <div class="card-title">十二天将</div>
+    <div class="detail-grid">
+        {% for name, info in generals.items() %}
+        <div class="detail-item">
+            <span class="key">
+                {{ name }}
+                <span class="badge {% if info.吉凶 == '吉' %}badge-green{% elif info.吉凶 == '大凶' %}badge-red{% elif info.吉凶 == '凶' %}badge-red{% else %}badge-gray{% endif %}">
+                    {{ info.吉凶 }}
+                </span>
+            </span>
+            <span class="val" style="font-size:0.8rem">{{ info.description[:60] }}...</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% for name, info in generals.items() %}
+    <div class="accordion mt-12">
+        <button class="accordion-header">
+            {{ info.name }} ({{ info.wuxing }}{% if info.wuxing %}·五行属{{ info.wuxing }}{% endif %})
+        </button>
+        <div class="accordion-body">
+            <p><strong>五行：</strong>{{ info.wuxing }}</p>
+            <p><strong>吉凶：</strong>{{ info.吉凶 }}</p>
+            <p><strong>说明：</strong>{{ info.description }}</p>
+            <p><strong>类象：</strong>{{ info.类象 }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 课经 -->
+<div class="card mt-16">
+    <div class="card-title">六壬课经（部分）</div>
+    {% for name, info in kejing.items() %}
+    <div class="accordion">
+        <button class="accordion-header">{{ name }}</button>
+        <div class="accordion-body">
+            <p><strong>说明：</strong>{{ info.description }}</p>
+            <p><strong>象意：</strong>{{ info.象意 }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 毕法赋 -->
+<div class="card mt-16">
+    <div class="card-title">毕法赋（节选）</div>
+    <div class="detail-grid">
+        {% for item in bifa[:20] %}
+        <div class="detail-item">
+            <span class="val" style="font-size:0.85rem">{{ item }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
