@@ -22,7 +22,7 @@ from pathlib import Path
 # 常量
 # ============================================================
 BASE_DIR = Path(__file__).parent
-CACHE_DIR = BASE_DIR / "cache"
+CACHE_DIR = Path(os.environ.get("CACHE_DIR", str(BASE_DIR / "cache")))
 CACHE_TTL_DAYS = 90  # 缓存有效期（天）
 
 # DeepSeek API 配置（OpenAI 兼容）
