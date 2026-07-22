@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}签文 — 观音灵签{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🏮 观音灵签</h1>
+
+<!-- 签文 -->
+<div class="card">
+    <div class="card-title">
+        第{{ lot.id }}签
+        <span class="badge {% if '上' in lot.level %}badge-green{% elif '下' in lot.level %}badge-red{% else %}badge-gray{% endif %}">
+            {{ lot.level }}
+        </span>
+    </div>
+
+    <h3 style="color:var(--gold);text-align:center">{{ lot.title }}</h3>
+
+    <div class="lot-poem">{{ lot.poem }}</div>
+
+    <div class="judgment-block {% if '上' in lot.level %}judgment-auspicious{% elif '下' in lot.level %}judgment-inauspicious{% else %}judgment-neutral{% endif %}">
+        {% if result.static_judgment %}
+            {{ result.static_judgment }}
+        {% else %}
+            {{ lot.judgment }}
+        {% endif %}
+    </div>
+</div>
+
+<!-- 掷筊结果 -->
+<div class="card mt-16">
+    <div class="card-title">掷筊确认</div>
+    {% for jb in result.jiaobei_results %}
+    <div class="interp-block {% if jb.result == '圣杯' %}" style="border-left-color:var(--auspicious)"{% endif %}>
+        <span class="interp-text">{{ jb.message }}</span>
+    </div>
+    {% endfor %}
+
+    {% if result.confirmed %}
+        <p class="text-green text-center mt-12">观音菩萨已应允此签！</p>
+    {% else %}
+        <p class="text-red text-center mt-12">三次未得圣杯，此签仅供参考，道友自行斟酌。</p>
+    {% endif %}
+</div>
+
+<!-- 签文详解 -->
+<div class="card mt-16">
+    <div class="card-title">签文详解</div>
+    <div class="detail-grid">
+        {% set interp = result.static_interpretation if result.static_interpretation else lot.interpretation %}
+        {% for key, val in interp.items() %}
+        <div class="detail-item">
+            <span class="key">{{ key }}</span>
+            <span class="val">{{ val }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 签文详细解读 -->
+<div class="card mt-16">
+    <div class="card-title">凤年真人详解</div>
+    {% if result.ai_commentary %}
+    <div class="interp-block">
+        <div class="interp-source">AI 智能解签</div>
+        <div class="interp-text" style="line-height:2.2;white-space:pre-line">{{ result.ai_commentary }}</div>
+    </div>
+    {% else %}
+    <div class="interp-block">
+        <div class="interp-text" style="line-height:2.2">
+            {% if result.static_judgment %}
+            <p style="color:var(--gold);margin-bottom:8px"><strong>判词：</strong>{{ result.static_judgment }}</p>
+            <br>
+            {% endif %}
+            {% set level_text = {'上上签':'此签为上上之签，如皓月当空，光明遍照。道友福缘深厚，所求之事，多有贵人相助，天时地利人和皆备。若能把握时机，积极进取，必能心想事成，马到成功。',
+                '上吉签':'上吉之签，吉星高照。虽有小小波折，不足为虑。道友宜坚定信心，顺势而为。事业稳步上升，财运渐入佳境，诸事可成。保持谦逊之心，福泽更加绵长。',
+                '中吉签':'中吉之签，先难后易。初时或有阻碍，但只要持之以恒，终能渐入佳境。道友凡事不可操之过急，稳扎稳打方为上策。时机一到，自然水到渠成。',
+                '中平签':'此签中平，吉凶参半。运势如平静水面，无大风浪也少惊喜。道友宜安守本分，做好眼前事。不必急于求成，守正则吉，妄动则险。平淡即是福。',
+                '中上签':'中上之签，运势稳中有升。如春回大地，万物复苏。道友事业有新机，财运转顺。但有小小障碍需用心化解。整体向好，宜保持积极心态。',
+                '中下签':'此签中下，运势略有波折。如逆水行舟，不进则退。道友需多加小心，谨慎行事。宜退一步海阔天空，不可冒进。待时而动，方可转危为安。',
+                '下下签':'下下之签，运势低迷。如寒冬腊月，万物萧条。道友宜退守自保，不宜妄动。但须知否极泰来，寒冬过后必是春天。守得住寂寞，方能见得了繁华。',
+                '下吉签':'下吉之签，虽处逆境而有转机。如黎明前的黑暗，曙光即将到来。道友宜保持耐心，不忘初心。艰难困苦，玉汝于成。坚持下去必见光明。',
+            } %}
+            {{ level_text.get(lot.level, '此签玄机微妙，道友宜细细参详签中之意。无论运势高低，天行有常，因果不虚。做好自己，方为上策。福生无量天尊！') }}
+            <br><br>
+            <strong>签诗禅解：</strong>{{ lot.poem | replace('\n', '；') }} 此诗寓意深远，道友可反复吟咏，体悟其中玄机。菩萨以此诗点化，望道友以智慧观之，以平常心待之。
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="text-center mt-24">
+    <a href="/guanyin" class="btn btn-secondary">再求一签</a>
+    <a href="/" class="btn btn-secondary" style="margin-left:8px">返回首页</a>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>{% block title %}玄机小筑{% endblock %} — AI道长占卜</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="site-header">
+            <a href="/" class="logo">
+                <span class="logo-icon">☯</span>
+                <span class="logo-text">玄机小筑</span>
+            </a>
+            <nav class="top-nav">
+                <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/iching">金钱卦</a></li>
+                    <li><a href="/guanyin">观音签</a></li>
+                    <li><a href="/daily">每日运势</a></li>
+                    <li><a href="/bazi">八字命盘</a></li>
+                    <li><a href="/liuren">大六壬</a></li>
+                    <li><a href="/fengshui">风水</a></li>
+                    <li><a href="/encyclopedia">玄学百科</a></li>
+                </ul>
+                <a href="/search" class="search-link" title="搜索">&#128269;</a>
+            </nav>
+        </header>
+
+        <!-- 主内容 -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- 道长话术栏 -->
+        <footer class="site-footer">
+            <div class="priest-bar">
+                <span class="priest-icon">&#128302;</span>
+                <span class="priest-name">{{ priest_name }}</span>
+                <span class="priest-motto">天机不可尽泄，福生无量天尊</span>
+            </div>
+            <p class="footer-note">
+                仅供娱乐参考，请理性看待。万物唯心造，命运在己手。
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

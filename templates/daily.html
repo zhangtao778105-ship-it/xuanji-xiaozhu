@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}每日运势{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📅 每日运势</h1>
+<p class="page-subtitle">{{ today.strftime('%Y年%m月%d日') }} · {{ fortune.day_ganzhi }}日</p>
+
+<div class="intro-card card">
+    <p class="greeting" style="font-size:0.95rem">{{ intro }}</p>
+</div>
+
+<!-- 今日卦象 -->
+<div class="card mt-16">
+    <div class="card-title">
+        今日卦象：{{ fortune.hexagram.name_cn }}
+        <span class="badge {% if fortune.level == '吉' %}badge-green{% elif fortune.level == '凶' %}badge-red{% else %}badge-gray{% endif %}">
+            {{ fortune.level }}
+        </span>
+    </div>
+
+    <div class="hexagram-viz">
+        {% set trigrams = {'乾':'☰','坤':'☷','震':'☳','巽':'☴','坎':'☵','離':'☲','艮':'☶','兌':'☱'} %}
+        <div style="font-size:3rem;color:var(--gold);margin:12px 0">
+            {{ trigrams.get(fortune.hexagram.upper_trigram, '?') }}{{ trigrams.get(fortune.hexagram.lower_trigram, '?') }}
+        </div>
+        <p style="color:var(--text-light);font-size:0.85rem">
+            {{ fortune.hexagram.upper_trigram }}上 {{ fortune.hexagram.lower_trigram }}下
+        </p>
+    </div>
+
+    <div class="judgment-block {% if fortune.level == '吉' %}judgment-auspicious{% elif fortune.level == '凶' %}judgment-inauspicious{% else %}judgment-neutral{% endif %}">
+        {{ fortune.fortune }}
+    </div>
+</div>
+
+<!-- 大象辞 -->
+<div class="card mt-16">
+    <div class="card-title">卦象指引</div>
+    <div class="interp-block">
+        <div class="interp-source">大象辞</div>
+        <div class="interp-text">{{ fortune.da_xiang }}</div>
+    </div>
+</div>
+
+<!-- 卦辞 -->
+<div class="card mt-16">
+    <div class="card-title">卦辞</div>
+    <p class="interp-text">{{ fortune.hexagram.gua_ci }}</p>
+</div>
+
+<!-- 今日宜忌 -->
+<div class="card mt-16">
+    <div class="card-title">今日宜忌</div>
+    <div class="interp-block">
+        {% if fortune.yi %}
+        <div style="margin-bottom:12px">
+            <span style="color:#4caf50;font-weight:bold">✔ 宜：</span>
+            <span style="color:var(--text)">{{ fortune.yi }}</span>
+        </div>
+        {% endif %}
+        {% if fortune.ji %}
+        <div style="margin-bottom:12px">
+            <span style="color:#f44336;font-weight:bold">✘ 忌：</span>
+            <span style="color:var(--text)">{{ fortune.ji }}</span>
+        </div>
+        {% endif %}
+        {% if fortune.lucky_colors and fortune.lucky_colors|length > 0 %}
+        <div>
+            <span style="color:#ff9800;font-weight:bold">🎨 幸运颜色：</span>
+            {% for c in fortune.lucky_colors %}
+            <span class="badge" style="background:var(--gold);color:#1a1a1a;margin:0 2px">{{ c }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 方位指引 -->
+{% if fortune.direction %}
+<div class="card mt-16">
+    <div class="card-title">🧭 方位指引</div>
+    <div class="direction-box" style="
+        background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
+        border: 1px solid var(--gold);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+    ">
+        <div style="font-size:2rem;color:var(--gold);margin-bottom:8px">
+            {{ fortune.direction.up_trigram }}{{ fortune.direction.lo_trigram }}
+        </div>
+        <div style="font-size:1.3rem;font-weight:bold;color:var(--gold);margin-bottom:4px">
+            今日吉方
+        </div>
+        <div style="font-size:1.8rem;font-weight:bold;color:#fff;margin:8px 0">
+            {{ fortune.direction.primary }}
+            {% if fortune.direction.secondary %}
+            <span style="font-size:1rem;color:var(--text-light)"> · {{ fortune.direction.secondary }}</span>
+            {% endif %}
+        </div>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px">
+            <div style="color:var(--gold);font-size:0.85rem;margin-bottom:4px">坐向建议</div>
+            <div style="color:#fff;font-weight:bold;font-size:1.05rem">{{ fortune.direction.seat }}</div>
+        </div>
+        <div style="margin-top:12px;color:var(--text-light);font-size:0.85rem;line-height:1.6">
+            {{ fortune.direction.reason }}
+        </div>
+        <div style="margin-top:10px">
+            <span class="badge" style="background:var(--gold);color:#1a1a1a">
+                {{ fortune.direction.wuxing }}气当令
+            </span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 凤年真人详解 -->
+<div class="card mt-16">
+    <div class="card-title">凤年真人详解</div>
+    <div class="interp-block">
+        <div class="interp-text" style="line-height:2.2">
+            <p>今日{{ fortune.day_ganzhi }}日，卦得<strong>{{ fortune.hexagram.name_cn }}</strong>（{{ fortune.hexagram.lower_trigram }}下{{ fortune.hexagram.upper_trigram }}上）。</p>
+            <p>{{ fortune.hexagram.da_xiang_ci }}</p>
+            <p>{{ fortune.fortune }}</p>
+            <br>
+            <em>天行有常，不为尧存，不为桀亡。运势仅为参考，道友自己的选择与行动才是决定命运的关键。福生无量天尊！</em>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-24">
+    <a href="/" class="btn btn-secondary">返回首页</a>
+</div>
+{% endblock %}

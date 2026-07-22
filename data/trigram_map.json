@@ -1,0 +1,10 @@
+{
+  "111": {"name": "乾", "nature": "天", "direction": "西北", "family": "父", "body": "首", "animal": "马", "wuxing": "金"},
+  "000": {"name": "坤", "nature": "地", "direction": "西南", "family": "母", "body": "腹", "animal": "牛", "wuxing": "土"},
+  "100": {"name": "震", "nature": "雷", "direction": "东", "family": "长男", "body": "足", "animal": "龙", "wuxing": "木"},
+  "010": {"name": "坎", "nature": "水", "direction": "北", "family": "中男", "body": "耳", "animal": "豕", "wuxing": "水"},
+  "001": {"name": "艮", "nature": "山", "direction": "东北", "family": "少男", "body": "手", "animal": "狗", "wuxing": "土"},
+  "110": {"name": "巽", "nature": "风", "direction": "东南", "family": "长女", "body": "股", "animal": "鸡", "wuxing": "木"},
+  "101": {"name": "離", "nature": "火", "direction": "南", "family": "中女", "body": "目", "animal": "雉", "wuxing": "火"},
+  "011": {"name": "兌", "nature": "泽", "direction": "西", "family": "少女", "body": "口", "animal": "羊", "wuxing": "金"}
+}

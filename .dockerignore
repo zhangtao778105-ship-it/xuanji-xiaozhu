@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+.env.example
+.git
+.gitignore
+cache_warmer.py
+*.md
+.DS_Store

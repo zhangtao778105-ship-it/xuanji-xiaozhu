@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}玄学百科{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📚 玄学百科</h1>
+<p class="page-subtitle">周易 · 五行 · 干支 · 奇门 · 梅花 · 紫微 · 面相 · 更多</p>
+
+<div class="search-bar">
+    <form action="/search" method="GET" style="display:flex;gap:8px;width:100%">
+        <input class="form-input" type="text" name="q" placeholder="搜索玄学百科..." style="flex:1">
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+</div>
+
+<div class="encyclopedia-grid mt-16">
+    {% set icons = {
+        '周易': '☯', '五行': '⭐', '天干地支': '📅', '奇门遁甲': '🚪',
+        '梅花易数': '🌸', '面相手相': '👤', '紫微斗数': '🔮', '太乙神数': '🌌',
+        '择日学': '📆', '姓名学': '✏️', '周公解梦': '💤', '符箓文化': '📜',
+        '道家养生': '🧘'
+    } %}
+    {% for cat in categories %}
+    <a href="/encyclopedia/{{ cat }}" class="encyclopedia-card">
+        <h3>{{ icons.get(cat, '📄') }} {{ cat }}</h3>
+        <p>点击查看详情</p>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

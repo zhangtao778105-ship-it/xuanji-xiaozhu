@@ -1,0 +1,576 @@
+/* ============================================================
+   玄机小筑 — 道系配色 · 响应式移动优先
+   ============================================================ */
+
+/* CSS Variables */
+:root {
+    --bg: #1a1a1a;
+    --card-bg: #2a2a2a;
+    --card-hover: #333333;
+    --gold: #c9a96e;
+    --gold-light: #d4b87e;
+    --cinnabar: #c04040;
+    --cinnabar-light: #d45050;
+    --text: #d0d0d0;
+    --text-light: #a0a0a0;
+    --moon-white: #e8e0d0;
+    --danger: #e03030;
+    --auspicious: #40a040;
+    --border: #3a3a3a;
+    --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font-main: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --font-mono: "SimSun", "FangSong", "KaiTi", serif;
+}
+
+/* Reset */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+    font-family:var(--font-main);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    min-height:100vh;
+}
+
+/* Layout */
+.app-container{
+    max-width:800px;
+    margin:0 auto;
+    padding:0 16px 24px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+.main-content{flex:1;padding-top:16px}
+
+/* Header */
+.site-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    background:var(--bg);
+    z-index:100;
+}
+.logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:var(--gold);
+    font-size:1.2rem;
+    font-weight:bold;
+}
+.logo-icon{font-size:1.5rem}
+.top-nav{display:flex;align-items:center;gap:8px}
+
+/* Nav — always visible, consistent mobile/desktop */
+.nav-menu{
+    display:flex;
+    list-style:none;
+    gap:4px;
+    flex-wrap:wrap;
+    position:static;
+    flex-direction:row;
+    background:none;
+    border:none;
+    padding:0;
+}
+.nav-menu a{
+    color:var(--text);
+    text-decoration:none;
+    padding:4px 8px;
+    display:block;
+    font-size:0.8rem;
+    border-radius:4px;
+    transition:background 0.2s;
+}
+.nav-menu a:hover{background:var(--card-hover);color:var(--gold)}
+.search-link{color:var(--gold);text-decoration:none;font-size:1.1rem}
+
+/* Hamburger — hidden */
+.nav-toggle{display:none}
+
+/* Footer */
+.site-footer{
+    margin-top:32px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+    text-align:center;
+}
+.priest-bar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color:var(--gold);
+    font-size:0.9rem;
+}
+.priest-motto{color:var(--text-light);font-size:0.8rem}
+.footer-note{color:var(--text-light);font-size:0.75rem;margin-top:8px}
+
+/* ============================================================
+   Components
+   ============================================================ */
+
+/* Cards */
+.card{
+    background:var(--card-bg);
+    border-radius:var(--radius-lg);
+    padding:20px;
+    margin-bottom:16px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+}
+.card-title{
+    color:var(--gold);
+    font-size:1.1rem;
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+    font-weight:bold;
+}
+.card-subtitle{color:var(--text-light);font-size:0.85rem;margin-bottom:12px}
+
+/* Buttons */
+.btn{
+    display:inline-block;
+    padding:12px 28px;
+    border:none;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-family:var(--font-main);
+    font-size:1rem;
+    transition:all 0.3s;
+    text-decoration:none;
+    text-align:center;
+}
+.btn-primary{
+    background:var(--gold);
+    color:var(--bg);
+    font-weight:bold;
+}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{
+    background:var(--card-bg);
+    color:var(--gold);
+    border:1px solid var(--gold);
+}
+.btn-secondary:hover{background:var(--card-hover)}
+.btn-danger{background:var(--cinnabar);color:#fff}
+.btn-danger:hover{background:var(--cinnabar-light)}
+.btn-large{padding:16px 40px;font-size:1.15rem;width:100%}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;color:var(--gold);margin-bottom:6px;font-size:0.9rem}
+.form-input,.form-select{
+    width:100%;
+    padding:10px 14px;
+    background:var(--card-bg);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    font-family:var(--font-main);
+    font-size:1rem;
+    transition:border-color 0.3s;
+}
+.form-input:focus,.form-select:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 2px rgba(201,169,110,0.2);
+}
+.form-row{display:flex;gap:12px}
+.form-row > *{flex:1}
+
+/* Grid */
+.menu-grid{
+    display:grid;
+    gap:12px;
+    grid-template-columns:1fr 1fr;
+}
+
+/* Menu Items */
+.menu-item{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:20px 16px;
+    text-align:center;
+    text-decoration:none;
+    color:var(--text);
+    transition:all 0.3s;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+}
+.menu-item:hover{
+    background:var(--card-hover);
+    border-color:var(--gold);
+    transform:translateY(-2px);
+    box-shadow:0 4px 16px rgba(201,169,110,0.15);
+}
+.menu-item .icon{font-size:2.2rem}
+.menu-item .label{font-size:1rem;color:var(--gold);font-weight:bold}
+.menu-item .desc{font-size:0.78rem;color:var(--text-light)}
+
+/* Tags / Badges */
+.badge{
+    display:inline-block;
+    padding:2px 10px;
+    border-radius:12px;
+    font-size:0.75rem;
+    font-weight:bold;
+}
+.badge-gold{background:var(--gold);color:var(--bg)}
+.badge-red{background:var(--cinnabar);color:#fff}
+.badge-green{background:var(--auspicious);color:#fff}
+.badge-gray{background:#555;color:var(--text)}
+
+/* Hexagram Visualization */
+.hexagram-viz{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    font-family:var(--font-mono);
+    padding:16px;
+}
+.yao-line{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:1rem;
+    padding:3px 0;
+}
+.yao-line.changing{color:var(--cinnabar)}
+.yao-symbol{font-size:1.3rem}
+.yao-label{font-size:0.8rem;color:var(--text-light);min-width:40px}
+
+/* Result table */
+.result-table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0;
+}
+.result-table th,.result-table td{
+    padding:10px 12px;
+    text-align:center;
+    border:1px solid var(--border);
+}
+.result-table th{background:var(--card-bg);color:var(--gold);font-weight:bold}
+.result-table td{background:var(--bg)}
+.result-table .highlight{color:var(--gold);font-weight:bold}
+
+/* Interpretation */
+.interp-block{
+    background:var(--bg);
+    border-left:3px solid var(--gold);
+    padding:12px 16px;
+    margin:12px 0;
+    border-radius:0 var(--radius) var(--radius) 0;
+}
+.interp-source{color:var(--gold);font-size:0.8rem;margin-bottom:4px}
+.interp-text{font-family:var(--font-mono);font-size:1rem;line-height:1.8}
+
+/* Accordion */
+.accordion{margin:8px 0}
+.accordion-header{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    padding:12px 16px;
+    width:100%;
+    text-align:left;
+    color:var(--gold);
+    cursor:pointer;
+    font-size:0.95rem;
+    border-radius:var(--radius);
+    transition:background 0.2s;
+    font-family:var(--font-main);
+}
+.accordion-header:hover{background:var(--card-hover)}
+.accordion-body{
+    display:none;
+    padding:16px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 var(--radius) var(--radius);
+}
+.accordion-body.open{display:block}
+
+/* Lot Poem */
+.lot-poem{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:1.1rem;
+    line-height:2;
+    color:var(--moon-white);
+    padding:20px;
+    background:var(--bg);
+    border-radius:var(--radius);
+    margin:16px 0;
+    border:1px solid var(--border);
+}
+
+/* Judgment */
+.judgment-block{
+    text-align:center;
+    padding:16px;
+    margin:12px 0;
+    border-radius:var(--radius);
+    font-weight:bold;
+}
+.judgment-auspicious{
+    background:rgba(64,160,64,0.15);
+    color:var(--auspicious);
+    border:1px solid var(--auspicious);
+}
+.judgment-neutral{
+    background:rgba(201,169,110,0.1);
+    color:var(--gold);
+    border:1px solid var(--gold);
+}
+.judgment-inauspicious{
+    background:rgba(224,48,48,0.1);
+    color:var(--danger);
+    border:1px solid var(--danger);
+}
+
+/* Divination Animation */
+.toss-area{
+    text-align:center;
+    padding:32px 16px;
+}
+.coin-display{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    margin:24px 0;
+    min-height:80px;
+    align-items:center;
+}
+.coin{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:linear-gradient(135deg, #c9a96e, #8b6914);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2rem;
+    color:var(--bg);
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    transition:transform 0.6s ease-out;
+}
+.coin.flipping{animation:coinFlip 0.6s ease-out}
+.coin.yang{background:linear-gradient(135deg,#ffd700,#b8860b)}
+.coin.yin{background:linear-gradient(135deg,#8b7355,#556b2f)}
+
+@keyframes coinFlip{
+    0%{transform:rotateY(0)}
+    50%{transform:rotateY(720deg) scale(1.2)}
+    100%{transform:rotateY(1440deg)}
+}
+
+.yao-progress{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin:16px 0;
+}
+.yao-dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--border);
+    transition:background 0.3s;
+}
+.yao-dot.done{background:var(--gold)}
+.yao-dot.current{background:var(--cinnabar);animation:pulse 0.8s infinite}
+@keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.5)}
+}
+
+/* Bazi specific */
+.bazi-table{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:1px;
+    background:var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    margin:16px 0;
+}
+.bazi-cell{
+    background:var(--card-bg);
+    padding:12px 8px;
+    text-align:center;
+}
+.bazi-cell.header{background:#333;color:var(--gold);font-weight:bold;font-size:0.85rem}
+.bazi-cell.ganzhi{font-family:var(--font-mono);font-size:1.5rem;color:var(--moon-white)}
+.bazi-cell.nayin{font-size:0.75rem;color:var(--text-light)}
+.bazi-cell.shishen{font-size:0.8rem;color:var(--gold)}
+.bazi-cell.day-master{background:rgba(201,169,110,0.15)}
+
+.wuxing-bars{margin:16px 0}
+.wuxing-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:4px 0;
+}
+.wuxing-label{color:var(--gold);min-width:24px;text-align:center}
+.wuxing-bar{
+    height:20px;
+    border-radius:4px;
+    transition:width 0.5s ease;
+}
+.wuxing-count{color:var(--text-light);font-size:0.8rem;min-width:20px}
+
+/* Search */
+.search-bar{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+.search-bar input{flex:1}
+.search-bar button{white-space:nowrap}
+.search-results{margin-top:16px}
+.search-hit{
+    padding:12px;
+    background:var(--card-bg);
+    border-radius:var(--radius);
+    margin-bottom:8px;
+    border:1px solid var(--border);
+}
+.search-hit .hit-category{color:var(--gold);font-size:0.8rem}
+.search-hit .hit-path{color:var(--text-light);font-size:0.8rem}
+.search-hit .hit-content{margin-top:4px;font-size:0.9rem}
+
+/* Encyclopedia */
+.encyclopedia-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+.encyclopedia-card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:20px;
+    text-decoration:none;
+    color:var(--text);
+    transition:all 0.3s;
+}
+.encyclopedia-card:hover{
+    border-color:var(--gold);
+    background:var(--card-hover);
+}
+.encyclopedia-card h3{color:var(--gold);margin-bottom:8px}
+.encyclopedia-card p{font-size:0.85rem;color:var(--text-light)}
+
+/* Detail view */
+.detail-section{margin:16px 0}
+.detail-section h3{
+    color:var(--gold);
+    margin-bottom:8px;
+    font-size:1rem;
+}
+.detail-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+.detail-item{
+    background:var(--bg);
+    padding:10px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+}
+.detail-item .key{color:var(--text-light);font-size:0.8rem}
+.detail-item .val{color:var(--text);font-size:0.9rem}
+
+/* Page title */
+.page-title{
+    text-align:center;
+    color:var(--gold);
+    font-size:1.4rem;
+    margin-bottom:20px;
+}
+.page-subtitle{
+    text-align:center;
+    color:var(--text-light);
+    font-size:0.9rem;
+    margin-bottom:24px;
+}
+
+/* Utilities */
+.text-center{text-align:center}
+.text-gold{color:var(--gold)}
+.text-red{color:var(--cinnabar)}
+.text-green{color:var(--auspicious)}
+.text-light{color:var(--text-light)}
+.mt-12{margin-top:12px}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+.mb-16{margin-bottom:16px}
+
+/* Intro card */
+.intro-card{
+    text-align:center;
+    padding:24px 20px;
+}
+.intro-card .greeting{
+    font-family:var(--font-mono);
+    font-size:1.1rem;
+    color:var(--moon-white);
+    line-height:1.8;
+}
+.intro-card .priest-sign{
+    color:var(--gold);
+    margin-top:12px;
+    font-size:0.9rem;
+}
+
+/* Animations */
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+}
+.fade-in{animation:fadeIn 0.5s ease-out}
+
+/* Shake */
+@keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    75%{transform:translateX(5px)}
+}
+.shake{animation:shake 0.5s ease}
+
+/* Loading */
+.loading{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+.spinner{
+    width:40px;
+    height:40px;
+    border:3px solid var(--border);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}

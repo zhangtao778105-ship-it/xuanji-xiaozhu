@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}八字命盘 — 结果{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🎋 命盘已排</h1>
+<p class="page-subtitle">
+    {{ result.birth_date }} · {{ result.lunar_date }}(农历) · 属{{ result.shengxiao }} · {{ result.gender }}命
+</p>
+
+<!-- 四柱八字表 -->
+<div class="card">
+    <div class="card-title">八字四柱</div>
+    <div class="bazi-table">
+        <div class="bazi-cell header">年柱</div>
+        <div class="bazi-cell header">月柱</div>
+        <div class="bazi-cell header">日柱</div>
+        <div class="bazi-cell header">时柱</div>
+
+        {% for p in result.pillars %}
+        <div class="bazi-cell ganzhi">{{ p.ganzhi }}</div>
+        {% endfor %}
+
+        {% for p in result.pillars %}
+        <div class="bazi-cell nayin">{{ p.nayin }}</div>
+        {% endfor %}
+
+        {% for p in result.pillars %}
+        <div class="bazi-cell shishen">{{ p.shishen }}</div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 五行分布 -->
+<div class="card mt-16">
+    <div class="card-title">五行分布</div>
+    <div class="wuxing-bars">
+        {% set colors = {'木':'#4a9','火':'#e55','土':'#ca6','金':'#da5','水':'#58f'} %}
+        {% set max_count = result.wuxing_counts.values()|max %}
+        {% for wx in ['木','火','土','金','水'] %}
+        {% set cnt = result.wuxing_counts.get(wx, 0) %}
+        <div class="wuxing-row">
+            <span class="wuxing-label">{{ wx }}</span>
+            <div class="wuxing-bar" style="width:{{ (cnt/max_count*100)|int if max_count > 0 else 0 }}%;background:{{ colors.get(wx,'#ca6') }};min-width:{{ cnt*20+4 }}px"></div>
+            <span class="wuxing-count">{{ cnt }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 用神 -->
+<div class="card mt-16">
+    <div class="card-title">用神分析</div>
+    <p><strong>日主五行：</strong><span class="text-gold">{{ result.yongshen.day_master_wuxing }}</span></p>
+    <p><strong>身强/身弱：</strong><span class="text-gold">{{ result.yongshen.body_type }}</span></p>
+    <p><strong>用神：</strong><span class="text-gold">{{ result.yongshen.yongshen|join('、') }}</span></p>
+    <div class="interp-block mt-12">
+        <div class="interp-text">{{ result.yongshen.advice }}</div>
+    </div>
+</div>
+
+<!-- 详细命理分析（200+字） -->
+{% if result.analysis %}
+<div class="card mt-16">
+    <div class="card-title">命盘详解</div>
+    <div style="font-size:0.95rem;line-height:2;color:var(--moon-white);white-space:pre-line">{{ result.analysis }}</div>
+</div>
+{% endif %}
+
+<!-- 神煞 -->
+<div class="card mt-16">
+    <div class="card-title">主要神煞</div>
+    {% if result.shensha %}
+    <div class="detail-grid">
+        {% for name, val in result.shensha.items() %}
+        <div class="detail-item">
+            <span class="key">{{ name }}</span>
+            <span class="val text-gold">
+                {% if val is string %}{{ val }}{% else %}{{ val|join('、') }}{% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-light">未查到特殊神煞</p>
+    {% endif %}
+</div>
+
+<!-- 大运 -->
+<div class="card mt-16">
+    <div class="card-title">
+        大运排盘
+        <span class="badge badge-gold">{{ result.dayun.direction }}</span>
+        <span style="color:var(--text-light);font-size:0.85rem;margin-left:8px">起运 {{ result.dayun.qiyun_age }} 岁</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        {% for dy in result.dayun.dayun %}
+        <div class="detail-item text-center">
+            <span class="key">{{ dy.age }}</span>
+            <span class="val text-gold" style="font-size:1.1rem;font-family:var(--font-mono)">{{ dy.ganzhi }}</span>
+            <span style="font-size:0.7rem;color:var(--text-light)">{{ dy.nayin }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 各柱详情 -->
+<div class="card mt-16">
+    <div class="card-title">各柱详解</div>
+    {% for p in result.pillars %}
+    <div class="accordion">
+        <button class="accordion-header">
+            {{ p.name }}：{{ p.ganzhi }} ({{ p.nayin }})
+            <span style="color:var(--text-light);font-size:0.8rem"> — {{ p.shishen }}</span>
+        </button>
+        <div class="accordion-body">
+            <p><strong>干支：</strong>{{ p.ganzhi }}</p>
+            <p><strong>纳音：</strong>{{ p.nayin }}</p>
+            <p><strong>十神：</strong>{{ p.shishen }}</p>
+            {% if p.canggan %}
+            <p><strong>藏干：</strong>{{ p.canggan|join('、') }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-24">
+    <a href="/bazi" class="btn btn-secondary">重排命盘</a>
+    <a href="/" class="btn btn-secondary" style="margin-left:8px">返回首页</a>
+</div>
+{% endblock %}

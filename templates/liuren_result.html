@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}大六壬排盘 — 结果{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📖 大六壬排盘</h1>
+<p class="page-subtitle">{{ pan.date }} · {{ pan.shichen }}时 · {{ pan.day_ganzhi }}日</p>
+
+<!-- 基本信息 -->
+<div class="card">
+    <div class="card-title">课式概要</div>
+    <div class="detail-grid">
+        <div class="detail-item">
+            <span class="key">占日</span>
+            <span class="val text-gold">{{ pan.date }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="key">时辰</span>
+            <span class="val text-gold">{{ pan.shichen }}时</span>
+        </div>
+        <div class="detail-item">
+            <span class="key">日干支</span>
+            <span class="val text-gold" style="font-size:1.2rem;font-family:SimSun,serif">{{ pan.day_ganzhi }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="key">月将</span>
+            <span class="val text-gold">{{ pan.yuejiang }}({{ pan.yuejiang_name }}) 加 {{ pan.shichen }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="key">贵人</span>
+            <span class="val text-gold">{{ pan.guiren }} · {{ pan.day_night }}{{ pan.direction }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="key">课体</span>
+            <span class="val text-gold">{{ pan.sanchuan.keti }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- 天盘 -->
+<div class="card mt-16">
+    <div class="card-title">天地盘</div>
+    <div style="overflow-x:auto">
+    <table class="result-table" style="font-size:0.85rem">
+        <tr>
+            <th>地盘</th>
+            {% for z in ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'] %}
+            <th style="color:var(--gold)">{{ z }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td style="color:var(--gold)">天盘</td>
+            {% for z in ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'] %}
+            <td class="highlight">{{ pan.tianpan.get(z, '?') }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td style="color:var(--text-light)">天将</td>
+            {% for z in ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'] %}
+            {% set tj = pan.tianjiang.get(z, ('?','','')) %}
+            <td style="font-size:0.75rem">
+                <span class="{% if tj[2] in ['吉','大吉'] %}text-green{% elif tj[2] in ['凶','大凶'] %}text-red{% else %}text-light{% endif %}">{{ tj[0] }}</span>
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td style="color:var(--text-light)">遁干</td>
+            {% for z in ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'] %}
+            <td style="font-size:0.8rem">{{ pan.dungan.get(z, '?') }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+    </div>
+</div>
+
+<!-- 四课 -->
+<div class="card mt-16">
+    <div class="card-title">四课</div>
+    <div class="detail-grid">
+        {% for ke in pan.sike %}
+        <div class="detail-item text-center" style="padding:16px">
+            <span class="key">{{ ke.name }}</span>
+            <div style="font-family:SimSun,serif;font-size:1.5rem;color:var(--moon-white);margin:8px 0">
+                {{ ke.tianpan }}
+            </div>
+            <div style="font-size:0.85rem;color:var(--text-light)">
+                <span>天{{ ke.tian_wx }} · 地{{ ke.di_wx }}</span>
+                {% if ke.ke %}
+                <br><span class="{% if '下' in ke.ke %}text-red{% else %}text-gold{% endif %}">{{ ke.ke }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 三传 -->
+<div class="card mt-16">
+    <div class="card-title">三传 <span class="badge badge-gold">{{ pan.sanchuan.keti }}</span></div>
+    <div style="display:flex;gap:16px;justify-content:center;align-items:center;padding:16px">
+        <div class="text-center" style="flex:1">
+            <div style="color:var(--text-light);font-size:0.8rem">初传</div>
+            <div style="font-family:SimSun,serif;font-size:2rem;color:var(--cinnabar)">{{ pan.sanchuan.chu_chuan }}</div>
+            <div style="font-size:0.7rem;color:var(--text-light)">发用</div>
+        </div>
+        <div style="color:var(--gold);font-size:1.5rem">→</div>
+        <div class="text-center" style="flex:1">
+            <div style="color:var(--text-light);font-size:0.8rem">中传</div>
+            <div style="font-family:SimSun,serif;font-size:2rem;color:var(--gold)">{{ pan.sanchuan.zhong_chuan }}</div>
+        </div>
+        <div style="color:var(--gold);font-size:1.5rem">→</div>
+        <div class="text-center" style="flex:1">
+            <div style="color:var(--text-light);font-size:0.8rem">末传</div>
+            <div style="font-family:SimSun,serif;font-size:2rem;color:var(--gold)">{{ pan.sanchuan.mo_chuan }}</div>
+            <div style="font-size:0.7rem;color:var(--text-light)">归计</div>
+        </div>
+    </div>
+    <p style="color:var(--text-light);font-size:0.85rem;text-align:center">{{ pan.sanchuan.formula }}</p>
+</div>
+
+<!-- 神煞 -->
+<div class="card mt-16">
+    <div class="card-title">主要神煞</div>
+    <div class="detail-grid">
+        {% for name, val in pan.shensha.items() %}
+        <div class="detail-item">
+            <span class="key">{{ name }}</span>
+            <span class="val text-gold">
+                {% if val is string %}{{ val }}{% else %}{{ val|join('、') }}{% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 凤年真人详解 -->
+{% if pan.interpretation %}
+<div class="card mt-16">
+    <div class="card-title">凤年真人详解 <span class="badge badge-gold">课式白话解</span></div>
+    <div style="font-size:0.95rem;line-height:2.2;color:var(--moon-white);white-space:pre-line">{{ pan.interpretation }}</div>
+</div>
+{% endif %}
+
+<div class="text-center mt-24">
+    <a href="/liuren" class="btn btn-secondary">重起一课</a>
+    <a href="/" class="btn btn-secondary" style="margin-left:8px">返回首页</a>
+</div>
+{% endblock %}
