@@ -17,5 +17,18 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Flask
-*.pyc
+# 备份文件
+*.bak
+
+# 内容生成脚本（一次性使用，不部署）
+build_corpus.py
+generate_hexagram_content.py
+generate_lot_content.py
+hexagram_commentaries.py
+lot_expansions.py
+data/_gen_expansions.py
+data/lot_expansions.py
+
+# 腾讯云 SCF 部署文件（Render 不需要）
+scf_bootstrap
+scf_deps/

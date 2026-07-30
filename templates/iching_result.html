@@ -18,7 +18,7 @@
     </div>
 
     <div class="hexagram-viz">
-        {% set trigrams = {'乾':'☰','坤':'☷','震':'☳','巽':'☴','坎':'☵','离':'☲','艮':'☶','兑':'☱'} %}
+        {% set trigrams = {'乾':'☰','坤':'☷','震':'☳','巽':'☴','坎':'☵','離':'☲','艮':'☶','兌':'☱'} %}
         {% set yao_names = ['初','二','三','四','五','上'] %}
         {% for i in range(5, -1, -1) %}
             {% set val = result.yao_values[i] %}
@@ -120,6 +120,9 @@
     {% else %}
     <div class="interp-block">
         <div class="interp-source">卦象揭示</div>
+        {% if result.static_commentary %}
+        <div class="interp-text" style="line-height:2.2;white-space:pre-line">{{ result.static_commentary }}</div>
+        {% else %}
         <div class="interp-text" style="line-height:2.2">
             {% set gua_name = interpretation.original.name_cn %}
             {% set upper = interpretation.original.upper_trigram %}
@@ -132,39 +135,9 @@
             {% endif %}
 
             {{ da_xiang }}<br><br>
-
-            此卦大象曰"{{ da_xiang[:20] }}{% if da_xiang|length > 20 %}...{% endif %}"，
-            {% if '元亨' in interpretation.original.gua_ci or '利貞' in interpretation.original.gua_ci %}
-            卦辞中见"元亨利贞"之德，乃君子四德俱全之象。道友宜以正心诚意行事，不可有邪念私心。得天时者，更需顺势而为，方能大成。
-            {% elif '凶' in interpretation.original.gua_ci or '吝' in interpretation.original.gua_ci or '悔' in interpretation.original.gua_ci %}
-            卦辞中见凶吝之辞，示警道友当前时势不利。然易之道在变通，知险而能避险，方为智者。宜退守待时，不宜妄动。
-            {% else %}
-            卦辞中平，吉凶在于人事。道友此时的境遇，关键在于自己如何判断与行动。守正则吉，妄动则凶。
-            {% endif %}
-            <br><br>
-
-            {% if result.changing_lines|length == 0 %}
-            此为静卦，事态较稳定，暂无大的变动。道友宜以不变应万变，按部就班即可。
-            {% elif result.changing_lines|length <= 2 %}
-            变爻不多，事有转机但变动可控。道友注意变爻所指的方向，适时调整策略，便可化险为夷，转凶为吉。
-            {% else %}
-            变爻较多，事态正处剧烈变化之中。道友宜灵活应变，不可固执己见。变化之中藏有生机，端看道友如何应对。
-            {% endif %}
-            <br><br>
-
-            <strong>解卦方法：</strong>{{ interpretation.method }}<br>
-            <strong>行动建议：</strong>
-            {% set gua = interpretation.original.name_cn %}
-            {% if gua in ['乾','泰','大有','晋','升','鼎','丰','既济'] %}
-            时机有利，当积极进取，但不可得意忘形。凡事适度，过犹不及。
-            {% elif gua in ['坤','谦','复','中孚','家人','临','观','节'] %}
-            宜守正持中，以柔克刚。不急不躁，稳步前行，厚德载物。
-            {% elif gua in ['否','剥','坎','困','明夷','蹇','未济'] %}
-            时运不济，宜韬光养晦。积蓄力量，等待时机。退一步海阔天空。
-            {% else %}
-            审时度势，量力而行。不急不躁，随机应变。吉凶在于一线之间，道友自己选。
-            {% endif %}
+            <strong>解卦方法：</strong>{{ interpretation.method }}
         </div>
+        {% endif %}
     </div>
     {% endif %}
     <p class="text-light mt-12" style="font-size:0.85rem;text-align:center">

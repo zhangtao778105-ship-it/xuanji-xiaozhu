@@ -70,12 +70,25 @@ def full_draw():
     except Exception:
         pass
 
+    # AI 不可用时，从静态语料库随机选取判词和解读变体
+    static_judgment = None
+    static_interpretation = None
+    if not ai_commentary:
+        judgments = lot.get("judgments", [])
+        if judgments:
+            static_judgment = random.choice(judgments)
+        variants = lot.get("interpretation_variants", [])
+        if variants:
+            static_interpretation = random.choice(variants)
+
     result_data = {
         "lot": lot,
         "jiaobei_results": results,
         "confirmed": confirmed,
         "attempts": min(attempt + 1, max_attempts),
         "ai_commentary": ai_commentary,
+        "static_judgment": static_judgment,
+        "static_interpretation": static_interpretation,
     }
     if not confirmed:
         result_data["note"] = confirmed_msg

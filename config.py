@@ -12,7 +12,7 @@ except ImportError:
 
 # 服务配置
 HOST = "0.0.0.0"
-PORT = 9090
+PORT = 9000  # SCF Web Function 要求 9000 端口
 DEBUG = False
 
 # 项目路径
@@ -20,6 +20,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+# 时区配置（PythonAnywhere 是 UTC，需显式设为东八区）
+TIMEZONE = os.environ.get("TIMEZONE", "Asia/Shanghai")
 
 # 道长配置
 PRIEST_NAME = "凤年真人"

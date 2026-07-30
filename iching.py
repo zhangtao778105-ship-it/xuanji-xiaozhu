@@ -203,9 +203,8 @@ def _yao_name(idx, values=None):
     return f"{pos_names[idx]}{yy}"
 
 
-def full_reading():
-    """完整起卦流程，返回前端需要的所有数据"""
-    values, changing = toss_six()
+def _do_reading(values, changing):
+    """内部：给定爻值和变爻，完成解卦+AI+静态解读"""
     orig_key = values_to_binary(values)
     changed_vals = calc_changed_hexagram(values, changing)
     changed_key = values_to_binary(changed_vals)
@@ -239,6 +238,11 @@ def full_reading():
     except Exception:
         pass
 
+    # AI 不可用时，加载本卦的白话点评
+    static_commentary = None
+    if not ai_commentary:
+        static_commentary = _load_commentary(orig_key)
+
     return {
         "yao_values": values,
         "changing_lines": list(changing),
@@ -246,4 +250,42 @@ def full_reading():
         "changed_key": changed_key if changing else None,
         "interpretation": interpretation,
         "ai_commentary": ai_commentary,
+        "static_commentary": static_commentary,
     }
+
+
+def full_reading():
+    """完整起卦流程（随机掷币），返回前端需要的所有数据"""
+    values, changing = toss_six()
+    return _do_reading(values, changing)
+
+
+def full_reading_from_values(values):
+    """
+    根据前端传入的六爻值起卦（跳过随机掷币）
+    values: [6,7,8,9] × 6，从初爻(0)到上爻(5)
+    """
+    values = [int(v) for v in values]
+    if len(values) != 6 or any(v not in (6, 7, 8, 9) for v in values):
+        raise ValueError(f"爻值必须为6个[6,7,8,9]，收到: {values}")
+    changing = {i for i, v in enumerate(values) if v in (6, 9)}
+    return _do_reading(values, changing)
+
+
+# 白话点评缓存
+_commentaries_cache = None
+
+
+def _load_commentary(binary_key):
+    """加载本卦的白话点评（道长口吻，单段文字）"""
+    global _commentaries_cache
+    import os
+    if _commentaries_cache is None:
+        path = os.path.join(os.path.dirname(__file__), 'data', 'hexagram_commentaries.json')
+        if os.path.exists(path):
+            import json
+            with open(path, 'r', encoding='utf-8') as f:
+                _commentaries_cache = json.load(f)
+        else:
+            _commentaries_cache = {}
+    return _commentaries_cache.get(binary_key)

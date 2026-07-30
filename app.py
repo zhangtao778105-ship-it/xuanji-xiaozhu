@@ -49,7 +49,18 @@ def iching_page():
 
 @app.route('/iching/result', methods=['POST'])
 def iching_result():
-    result = iching.full_reading()
+    # 优先使用前端逐爻投币的结果
+    toss_values = []
+    for i in range(6):
+        v = request.form.get(f'toss_{i}')
+        if v is not None:
+            toss_values.append(int(v))
+    if len(toss_values) == 6:
+        result = iching.full_reading_from_values(toss_values)
+    else:
+        # 表单数据缺失（如直接POST），回退到随机起卦
+        result = iching.full_reading()
+
     interp = result['interpretation']
     orig = interp.get('original', {})
 
@@ -101,7 +112,7 @@ def guanyin_result():
 # ============================================================
 @app.route('/daily')
 def daily_page():
-    today = date.today()
+    today = daily._today()
     fortune = daily.daily_fortune(today)
     intro = priest.daily_intro()
     return render_template('daily.html',

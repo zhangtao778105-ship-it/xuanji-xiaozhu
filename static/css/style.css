@@ -232,9 +232,12 @@ body{
     font-weight:bold;
 }
 .badge-gold{background:var(--gold);color:var(--bg)}
-.badge-red{background:var(--cinnabar);color:#fff}
-.badge-green{background:var(--auspicious);color:#fff}
-.badge-gray{background:#555;color:var(--text)}
+.badge-shangji{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a1a;border:1px solid #ffd700}
+.badge-shang{background:var(--auspicious);color:#fff}
+.badge-zhongshang{background:#26a69a;color:#fff}
+.badge-ping{background:#555;color:var(--text)}
+.badge-xia{background:#ef6c00;color:#fff}
+.badge-xiong{background:var(--cinnabar);color:#fff}
 
 /* Hexagram Visualization */
 .hexagram-viz{
@@ -330,17 +333,33 @@ body{
     border-radius:var(--radius);
     font-weight:bold;
 }
-.judgment-auspicious{
+/* --- 六等运势 judgment 区块 --- */
+.judgment-shangji{
+    background:linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,140,0,0.08));
+    color:#ffd700;
+    border:1px solid #ffd700;
+}
+.judgment-shang{
     background:rgba(64,160,64,0.15);
     color:var(--auspicious);
     border:1px solid var(--auspicious);
 }
-.judgment-neutral{
+.judgment-zhongshang{
+    background:rgba(38,166,154,0.12);
+    color:#4dd0e1;
+    border:1px solid #26a69a;
+}
+.judgment-ping{
     background:rgba(201,169,110,0.1);
     color:var(--gold);
     border:1px solid var(--gold);
 }
-.judgment-inauspicious{
+.judgment-xia{
+    background:rgba(239,108,0,0.1);
+    color:#ffab40;
+    border:1px solid #ef6c00;
+}
+.judgment-xiong{
     background:rgba(224,48,48,0.1);
     color:var(--danger);
     border:1px solid var(--danger);

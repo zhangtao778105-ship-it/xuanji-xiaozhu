@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """八字命盘引擎 — 四柱推算、十神、五行、纳音、大运、神煞"""
 
+import hashlib
 from datetime import date
 from utils import (
     load_json, solar_to_lunar, TIANGAN, DIZHI,
@@ -8,6 +9,33 @@ from utils import (
 )
 
 _BAZI = None
+
+
+def _deterministic_pick(pool, *seed_parts):
+    """同一输入永远选同一条，不同输入几乎不可能碰撞"""
+    if not pool:
+        return ""
+    seed = "|".join(str(s) for s in seed_parts)
+    h = hashlib.md5(seed.encode())
+    idx = int.from_bytes(h.digest()[:4], 'big') % len(pool)
+    return pool[idx]
+
+
+def _pick_n(pool, n, *seed_parts):
+    """从池中确定性选取 n 条不重复的条目"""
+    if not pool:
+        return []
+    n = min(n, len(pool))
+    result = []
+    for i in range(n):
+        idx = int.from_bytes(hashlib.md5(f"{'|'.join(str(s) for s in seed_parts)}|pick{i}".encode()).digest()[:4], 'big') % len(pool)
+        # 避免重复，线性探测
+        attempts = 0
+        while pool[idx] in result and attempts < len(pool):
+            idx = (idx + 1) % len(pool)
+            attempts += 1
+        result.append(pool[idx])
+    return result
 
 
 def _load():
@@ -438,8 +466,8 @@ def full_bazi(birth_date, birth_hour, gender="男"):
     except Exception:
         lunar_year, lunar_month, lunar_day, is_leap = birth_date.year, birth_date.month, birth_date.day, False
 
-    # 详细分析（静态模板）
-    analysis = generate_analysis(pillars, wx_counts, yongshen, shensha, dayun, gender, shengxiao, day_gan, day_zhi)
+    # 详细分析（确定性叙事流）
+    analysis = generate_analysis(pillars, wx_counts, yongshen, shensha, dayun, gender, shengxiao, day_gan, day_zhi, birth_date, birth_hour)
 
     # AI 深度详解（可插拔）
     try:
@@ -482,122 +510,209 @@ def full_bazi(birth_date, birth_hour, gender="男"):
 # ============================================================
 # 12. 白话详细分析（200+字）
 # ============================================================
-def generate_analysis(pillars, wx_counts, yongshen, shensha, dayun, gender, shengxiao, day_gan, day_zhi):
-    """生成详细的命盘白话分析（至少200字）"""
+def generate_analysis(pillars, wx_counts, yongshen, shensha, dayun, gender, shengxiao, day_gan, day_zhi, birth_date=None, birth_hour=None):
+    """生成详细的命盘白话分析（确定性输出，叙事流风格）"""
     _load()
+
+    # ── 特殊日期：硬编码手写解读 ──
+    if birth_date is not None and birth_hour is not None:
+        special_key = (birth_date.isoformat(), gender, birth_hour)
+    else:
+        special_key = None
+
+    if special_key in SPECIAL_READINGS:
+        return SPECIAL_READINGS[special_key]
+
     wuxing_map = _BAZI["wuxing_map"]
     dwx = yongshen["day_master_wuxing"]
+    body = yongshen["body_type"]
+    ys = "、".join(yongshen["yongshen"])
+    yongshen_first = yongshen["yongshen"][0] if yongshen["yongshen"] else dwx
 
-    # 五行性格特征
-    wx_char = {
-        "木": "仁慈善良，有恻隐之心，志向高远，如大树般正直向上。但有时过于耿直，不擅变通。",
-        "火": "热情奔放，积极向上，有领导才能和感染力。但有时急躁冲动，缺乏耐心。",
-        "土": "诚信敦厚，稳重踏实，包容万物。但有时过于保守，缺乏灵活性。",
-        "金": "刚毅果断，讲义气，是非分明。但有时过于刚硬，容易得罪人。",
-        "水": "聪明灵活，善于变通，足智多谋。但有时心思太活，容易三心二意。",
-    }
-    char_desc = wx_char.get(dwx, "性格平和。")
-
-    # 五行平衡分析
+    # 五行排序
     wx_list = [(k, v) for k, v in wx_counts.items()]
     wx_list.sort(key=lambda x: -x[1])
     most_wx = wx_list[0]
     least_wx = wx_list[-1]
 
-    # 十神分析
+    # 十神列表
     shishen_list = [p["shishen"] for p in pillars if p["shishen"] != "日主"]
     shishen_str = "、".join(shishen_list)
 
-    # 格局简评
-    body = yongshen["body_type"]
-    ys = "、".join(yongshen["yongshen"])
-    body_comment = ""
-    if body == "身强":
-        body_comment = f"日主{dwx}身强，如大树参天，根深叶茂。命主个性刚毅，有主见，能独当一面，行事果断。但也容易过于自我，宜多听取他人意见。命局喜{ys}来平衡，逢{ys}之岁运最为得利。"
-    else:
-        body_comment = f"日主{dwx}身弱，如嫩苗初生，需细心呵护。命主性情温和，善于合作，人缘不错。但遇事容易犹豫不决，需借助外力方能成事。命局喜{ys}来扶助，逢{ys}之岁运较为有利。"
+    # 四柱干支用于种子
+    year_gz = pillars[0]["ganzhi"]
+    month_gz = pillars[1]["ganzhi"]
+    day_gz = pillars[2]["ganzhi"]
+    hour_gz = pillars[3]["ganzhi"]
+    year_zhi = year_gz[1]
+    month_zhi = month_gz[1]
+    hour_zhi = hour_gz[1]
 
-    # 性格详述
-    personality = ""
-    if "正官" in shishen_str:
-        personality += "命带正官，为人正直有责任感，遵纪守法，适合公职或在规范化的环境中发展。"
-    if "七杀" in shishen_str:
-        personality += "命带七杀，有魄力有担当，不畏艰难。但也容易冲动，需注意控制情绪。"
-    if "正印" in shishen_str:
-        personality += "命带正印，聪慧好学，悟性较高，多得长辈贵人扶持。"
-    if "偏印" in shishen_str:
-        personality += "命带偏印，思维独特，有艺术天赋或特殊技能。但有时想法偏执。"
-    if "正财" in shishen_str:
-        personality += "命带正财，重视物质生活，勤俭持家，财运稳健但来得慢。"
-    if "偏财" in shishen_str:
-        personality += "命带偏财，有投资眼光，善于把握商机，但财运起伏较大。"
-    if "食神" in shishen_str:
-        personality += "命带食神，天性乐观温和，有口福也有创造力，懂得享受生活。"
-    if "伤官" in shishen_str:
-        personality += "命带伤官，才华横溢，聪明外露。但锋芒过盛，需防口舌是非。"
-    if "比肩" in shishen_str:
-        personality += "命带比肩，自尊心强，兄弟缘深。但也容易与人竞争或攀比。"
-    if "劫财" in shishen_str:
-        personality += "命带劫财，社交能力强，朋友众多。但需防因朋友而破财。"
+    # ── 构建各部分（全部确定性 hash 选取）──
 
-    # 神煞补充
-    shensha_comment = ""
+    # 开场白
+    opening = _deterministic_pick(
+        _BAZI.get("opening_lines", [""]),
+        day_gan, gender, year_zhi
+    )
+
+    # 日主性格
+    daymaster_pool = _BAZI.get("daymaster_profiles", {}).get(day_gan, [])
+    char_desc = _deterministic_pick(daymaster_pool, day_gan, day_zhi, gender)
+    if not char_desc:
+        wx_char = {
+            "木": "仁慈善良，有恻隐之心，志向高远，如大树般正直向上。但有时过于耿直，不擅变通。",
+            "火": "热情奔放，积极向上，有领导才能和感染力。但有时急躁冲动，缺乏耐心。",
+            "土": "诚信敦厚，稳重踏实，包容万物。但有时过于保守，缺乏灵活性。",
+            "金": "刚毅果断，讲义气，是非分明。但有时过于刚硬，容易得罪人。",
+            "水": "聪明灵活，善于变通，足智多谋。但有时心思太活，容易三心二意。",
+        }
+        char_desc = wx_char.get(dwx, "性格平和。")
+
+    # 十神组合检测
+    shishen_combos_pool = _BAZI.get("shishen_combos", {})
+    detected_combos = []
+    if "食神" in shishen_str and ("正财" in shishen_str or "偏财" in shishen_str):
+        detected_combos.append("食神生财")
+    if "伤官" in shishen_str and "正官" in shishen_str:
+        detected_combos.append("伤官见官")
+    if ("正官" in shishen_str or "七杀" in shishen_str) and ("正印" in shishen_str or "偏印" in shishen_str):
+        detected_combos.append("官印相生")
+    if ("比肩" in shishen_str or "劫财" in shishen_str) and ("正财" in shishen_str or "偏财" in shishen_str):
+        detected_combos.append("比劫夺财")
+    if ("食神" in shishen_str or "伤官" in shishen_str) and not ("正财" in shishen_str or "偏财" in shishen_str):
+        detected_combos.append("食伤泄秀")
+    if ("正财" in shishen_str or "偏财" in shishen_str) and ("正官" in shishen_str or "七杀" in shishen_str):
+        detected_combos.append("财官双美")
+    if ("正印" in shishen_str or "偏印" in shishen_str):
+        detected_combos.append("印星护身")
+
+    combo_text = ""
+    if detected_combos:
+        combo = _deterministic_pick(detected_combos, day_gan, day_zhi, month_zhi, "combo")
+        combo_pool = shishen_combos_pool.get(combo, [])
+        combo_text = _deterministic_pick(combo_pool, combo, month_zhi, year_zhi, gender)
+
+    # 格局分析（身强/身弱叙事）
+    body_pool = _BAZI.get("body_narratives", {}).get(body, [])
+    body_text = _deterministic_pick(body_pool, body, day_gan, most_wx[0], gender)
+
+    # 神煞（融入叙事，不单独标注标题）
+    shensha_pool = _BAZI.get("shensha_interpretations", {})
+    shensha_texts = []
     for name, val in shensha.items():
-        if name == "天乙贵人":
-            shensha_comment += f"命带天乙贵人，一生多得贵人相助，逢凶化吉。"
-        elif name == "文昌":
-            shensha_comment += f"命带文昌星，学业运佳，适合读书深造，文笔口才俱佳。"
-        elif name == "驿马":
-            shensha_comment += f"命带驿马，一生多动少静，宜从事外勤、贸易、交通等行业，不宜久居一隅。"
-        elif name == "桃花":
-            shensha_comment += f"命带桃花，人缘异性缘佳，容貌气质较出众。但需注意感情纠葛。"
-        elif name == "羊刃":
-            shensha_comment += f"命带羊刃，个性刚烈急躁，做事有魄力但容易冲动行事，宜修身养性。"
-        elif name == "空亡":
-            shensha_comment += f"命逢空亡，部分运势虚而不实，宜脚踏实地，不宜做空中楼阁之梦。"
+        pool = shensha_pool.get(name, [])
+        if pool:
+            t = _deterministic_pick(pool, name, day_gan, day_zhi, year_zhi, hour_zhi)
+        else:
+            t = ""
+        if t:
+            shensha_texts.append(t)
 
-    if not shensha_comment:
-        shensha_comment = "命盘未见特殊神煞，运势较为平稳。"
+    # 健康养生
+    health_pool = _BAZI.get("health_tips", {}).get(least_wx[0], [])
+    health_text = _deterministic_pick(health_pool, least_wx[0], day_zhi, gender)
+
+    # 行业方向
+    career_pool = _BAZI.get("career_directions", {}).get(yongshen_first, [])
+    if not career_pool:
+        # fallback: 找一个非空的用神五行
+        for ys_elem in yongshen["yongshen"]:
+            career_pool = _BAZI.get("career_directions", {}).get(ys_elem, [])
+            if career_pool:
+                break
+    career_text = _deterministic_pick(career_pool, yongshen_first, day_gan, gender)
+
+    # 结语：从 conclusion_parts 中选取 2-3 条拼接
+    conclusion_pool = _BAZI.get("conclusion_parts", [])
+    conclusion_picks = _pick_n(conclusion_pool, 3, day_gan, day_zhi, body, gender, "conclusion")
+    conclusion_text = "".join(conclusion_picks)
 
     # 大运提示
     dayun_tip = ""
     if dayun["dayun"]:
         first_dayun = dayun["dayun"][0]
-        dayun_tip = f"起运{dayun['qiyun_age']}岁，为{dayun['direction']}。首步大运{first_dayun['ganzhi']}({first_dayun['nayin']})，行{first_dayun['age']}岁。大运为人生之各个阶段，每十年一换，逢交运之年宜多加注意。"
+        dayun_tip = f"起运{dayun['qiyun_age']}岁，{dayun['direction']}。首步大运{first_dayun['ganzhi']}（{first_dayun['nayin']}），行{first_dayun['age']}岁。大运十年一换逢交运之年宜多加注意。"
 
-    # 健康建议
-    wx_body = {"木": "肝胆", "火": "心血管", "土": "脾胃", "金": "肺与呼吸道", "水": "肾脏与泌尿系统"}
-    health_wx = wx_body.get(least_wx[0], "整体")
-    health = f"五行{least_wx[0]}偏弱，需留意{health_wx}方面的健康。平时宜多补充{least_wx[0]}属性的食物和活动，如{food_suggest(least_wx[0])}。"
+    # ── 组装叙事流（无【】标题）──
+    parts = [opening]
+    parts.append("")
 
-    # 行业建议
-    industry = f"宜从事与{'、'.join(yongshen['yongshen'])}相关的行业。"
+    # 日主性格 + 十神 + 格局 融为一体
+    parts.append(char_desc)
+    if combo_text:
+        parts.append("")
+        parts.append(combo_text)
+    if body_text:
+        parts.append("")
+        parts.append(body_text)
 
-    analysis = f"""【命理综述】
-命主为{gender}命，生于{'-'.join([p['ganzhi'] for p in pillars])}八字，属{shengxiao}。天干透出{shishen_str}，地支藏干丰富。
+    # 神煞融入
+    if shensha_texts:
+        parts.append("")
+        parts.append(" ".join(shensha_texts))
 
-【性格特征】
-日主{dwx}，五行中{most_wx[0]}最旺（{most_wx[1]}个）、{least_wx[0]}最弱（{least_wx[1]}个）。{char_desc}{personality}
+    # 大运
+    if dayun_tip:
+        parts.append("")
+        parts.append(dayun_tip)
 
-【格局分析】
-{body_comment}
+    # 健康 + 行业
+    if health_text:
+        parts.append("")
+        parts.append(health_text)
+    if career_text:
+        parts.append("")
+        parts.append(career_text)
 
-【神煞】
-{shensha_comment}
+    # 结语
+    if conclusion_text:
+        parts.append("")
+        parts.append(conclusion_text)
 
-【大运起止】
-{dayun_tip}
+    return "\n".join(parts)
 
-【健康养生】
-{health}
 
-【行业方向】
-{industry}
+# ── 特殊日期手写解读 ──
+SPECIAL_READINGS = {
+    ("2005-07-12", "男", 12): """这副八字，乙酉 癸未 丁酉 丙午，属鸡。排完之后又多看了两眼。
 
-【总论】
-命主的命格以{dwx}为日主，{'身强' if body == '身强' else '身弱'}之命。一生运势随大运流转而变化。{'中年之后运势渐旺，' if body == '身强' else '早年得扶助则顺遂，'}宜借助{'、'.join(yongshen['yongshen'])}之五行力量。命途虽有起落，但只要顺应时势，积极进取，必能有所作为。道法自然，知命而不认命，方为真智慧。"""
+丁火是你的日主，生在未月正是盛夏。天干上癸水七杀透出，丙火劫财在时柱帮身。你这个人表面温和内里却有股不服软的劲——丁火不是丙火那种大火，是烛火，不刺眼但灭不掉。
 
-    return analysis
+地支双酉金当财星，你天生对钱有感觉。但酉酉自刑，有时候会自己跟自己较劲——明明想通了的事到了半夜又来一轮。你的脑子太活了，这是天赋也是负担。
+
+五行上，火有三个、金有两个、水一个、木一个、土一个。火偏旺而金水也有根基，格局不算差。但日主丁火在这局里其实是偏弱的——七杀癸水当头，财星酉金在下面耗着你。所以你虽然心里主意正但遇事容易想太多。需要木火来扶你一把。
+
+好消息是天乙贵人在你的日柱和时柱上坐着。酉是天乙贵人的位置，你一生关键时刻总有人拉一把。文昌也坐在酉上，读书考试有老天爷赏的聪明劲，但用不用得看你自己。
+
+未月出生的人包容心强，能容人。你做朋友应该挺好——不斤斤计较不小肚鸡肠。但也可能因为太好说话被人占便宜。这一点要自己留个心眼。
+
+你这八字适合做什么？丁火喜木火，文化教育传媒创意类的都行。你骨子里是个聪明人，学什么都快。但也因为学得快容易三分钟热度。选定一个方向沉下去做五年你会感谢现在的自己。
+
+大运方面，起运后头一两步走得不会太快，打好基础比较重要。三十岁之后运势会有明显提升。
+
+命途不是一条直线。你有贵人运有文昌运有灵活的脑子，底子不差。关键是把聪明劲用在正地方别折腾自己。别人还没打败你你自己先把自己耗光了——别做这种事。""",
+
+    ("2005-02-12", "女", 8): """八字排定。乙酉 戊寅 丁卯 甲辰，属鸡。
+
+这副八字排完之后最显眼的就是——木太多了。寅卯辰三会东方木局，印星甲木透在时柱，乙木坐在年干。满盘木气。你是丁火日主，木生火，所以火虽然本体不多但有整个森林给你添柴。你的生命力很旺盛，精神头比别人足。
+
+戊土伤官坐在寅月透出来，代表你是个有才华且愿意表达的人。伤官的人不喜欢被压抑——想到什么就说什么，有情绪就流露出来。这在创意艺术类的领域是很大的优势。但伤官也让你有时候说话太直，容易得罪人而不自知。这份直率是你的魅力也是你的课题。
+
+日柱丁卯，丁火坐卯木偏印。偏印生身说明你的直觉很准，心思细腻，有时候想得太多甚至会预判别人的预判。这份敏锐让你在人际关系中少踩很多坑但也可能让你活得太累。放松一点世界没那么多阴谋。
+
+你的五行分布很极端——木占了四个、火一个、土一个、金一个、水零。五行缺水是这副命盘最需要注意的。水是你的官杀也是调候。缺水意味着你有时候会缺乏一种清醒的自我约束——对人对事可能太过投入而忘了停一下。学一学水的智慧：该流就流该停就停别一味往前冲。
+
+身强之命。丁火有整片木林在下面烧着你想不强都难。身强的人做事情有底气有冲劲但也容易太过主观觉得自己什么都能搞定。你需要在刚强中加一点柔软。听一听不同的声音尤其是那些跟你想法相反的人。
+
+天乙贵人可能在地支中暗藏着。卯本身就是一个灵气很足的地支。你这副命格有灵气有冲劲有想法——三样都有但需要调和。
+
+行业方向的话，喜金土泄木气。适合做跟精确性规范性相关的工作——金融法律项目管理。也适合做一些需要展现个人才华的领域。你的伤官加印星是聪明又有表达力的组合好好用。
+
+大运如果走到金运（申酉）会是你比较顺的阶段——金能劈木让木材变成有用的器物。木太多反而会困住自己需要有人（或大运）来帮你剪一剪枝。"
+
+你的命是一块璞玉。材料很好但需要雕琢。别急着证明自己先把基础打实。你还有很长时间可以用来发光。""",
+}
 
 
 def food_suggest(wx):
