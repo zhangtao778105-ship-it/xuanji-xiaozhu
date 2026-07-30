@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}{{ topic }} — 玄学百科{% endblock %}
+
+{% block content %}
+<div class="topic-header">
+    <a href="/encyclopedia" class="back-link">← 返回百科</a>
+    {% set topic_meta = {
+        '周易':       {'icon': '☯', 'color': '#c9a96e'},
+        '五行':       {'icon': '⭐', 'color': '#e03030'},
+        '天干地支':   {'icon': '📅', 'color': '#4dd0e1'},
+        '奇門遁甲':   {'icon': '🚪', 'color': '#7986cb'},
+        '梅花易數':   {'icon': '🌸', 'color': '#f48fb1'},
+        '紫微斗數':   {'icon': '🔮', 'color': '#ce93d8'},
+        '太乙神數':   {'icon': '🌌', 'color': '#90a4ae'},
+        '面相手相':   {'icon': '👤', 'color': '#a1887f'},
+        '擇日學':     {'icon': '📆', 'color': '#ffb74d'},
+        '姓名學':     {'icon': '✏️', 'color': '#4db6ac'},
+        '周公解夢':   {'icon': '💤', 'color': '#64b5f6'},
+        '符籙文化':   {'icon': '📜', 'color': '#ffcc80'},
+        '道家養生':   {'icon': '🧘', 'color': '#81c784'},
+    } %}
+    {% set meta = topic_meta.get(topic, {'icon': '📄', 'color': '#888'}) %}
+    <h1 class="topic-title">
+        <span class="topic-icon">{{ meta.icon }}</span>
+        {{ topic }}
+    </h1>
+</div>
+
+<!-- 目录 -->
+{% if content is mapping %}
+{% set toc_items = content.keys()|list %}
+{% if toc_items|length > 1 %}
+<nav class="toc">
+    <span class="toc-title">目录</span>
+    <div class="toc-links">
+        {% for key in toc_items %}
+        <a href="#{{ loop.index0 }}" class="toc-link">{{ key }}</a>
+        {% endfor %}
+    </div>
+</nav>
+{% endif %}
+
+<!-- 内容正文 -->
+<article class="article-body">
+    {% for key, value in content.items() %}
+    <section class="article-section" id="{{ loop.index0 }}">
+        <h2 class="section-title" style="border-left-color:{{ meta.color }}">{{ key }}</h2>
+
+        {% if value is string %}
+            <div class="article-text">{{ value | replace('\n\n', '</p><p class="article-text">') | safe }}</div>
+
+        {% elif value is mapping and value|length > 0 %}
+            {# 检测是否为纯键值对表 #}
+            {% set is_kv_table = namespace(flag=true) %}
+            {% for subk, subv in value.items() %}
+                {% if subv is mapping or subv is iterable and subv is not string %}
+                    {% set is_kv_table.flag = false %}
+                {% endif %}
+            {% endfor %}
+
+            {% if is_kv_table.flag %}
+                {# 键值对 → 表格 #}
+                <div class="data-table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>名称</th><th>内容</th></tr></thead>
+                    <tbody>
+                    {% for subk, subv in value.items() %}
+                    <tr><td class="table-key">{{ subk }}</td><td>{{ subv }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            {% else %}
+                {# 嵌套对象 → 卡片列表 #}
+                <div class="section-cards">
+                {% for subk, subv in value.items() %}
+                    <div class="section-card">
+                        <h3 class="card-heading">{{ subk }}</h3>
+                        <div class="card-body">
+                        {% if subv is string %}
+                            {% set paragraphs = subv.strip().split('\n\n') %}
+                            {% for p in paragraphs %}
+                                {% if p.strip() %}
+                                <p>{{ p.strip() }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        {% elif subv is mapping %}
+                            <table class="mini-table">
+                            {% for kk, vv in subv.items() %}
+                            <tr><td class="mini-key">{{ kk }}</td><td>{{ vv }}</td></tr>
+                            {% endfor %}
+                            </table>
+                        {% elif subv is iterable and subv is not string %}
+                            <ul class="article-list">
+                            {% for item in subv %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>{{ subv }}</p>
+                        {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+
+        {% elif value is iterable and value is not string and value is not mapping %}
+            <ul class="article-list">
+            {% for item in value %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+
+        {% else %}
+            <p class="article-text">{{ value }}</p>
+        {% endif %}
+    </section>
+    {% endfor %}
+</article>
+{% else %}
+    <p class="article-text">暂无内容</p>
+{% endif %}
+
+<div class="text-center" style="margin:48px 0 24px">
+    <a href="/encyclopedia" class="btn btn-secondary">← 返回百科首页</a>
+    <a href="/" class="btn btn-secondary" style="margin-left:8px">返回首页</a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// 目录高亮
+(function(){
+    const links = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('.article-section');
+    if (!links.length) return;
+    const observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if (!e.isIntersecting) return;
+            links.forEach(function(l){
+                l.classList.remove('active');
+                if (l.getAttribute('href') === '#' + e.target.id) l.classList.add('active');
+            });
+        });
+    }, {rootMargin: '-20% 0px -70% 0px'});
+    sections.forEach(function(s){ observer.observe(s); });
+})();
+</script>
+{% endblock %}

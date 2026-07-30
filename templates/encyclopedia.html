@@ -2,27 +2,46 @@
 {% block title %}玄学百科{% endblock %}
 
 {% block content %}
-<h1 class="page-title">📚 玄学百科</h1>
-<p class="page-subtitle">周易 · 五行 · 干支 · 奇门 · 梅花 · 紫微 · 面相 · 更多</p>
+<div class="encyclopedia-hero">
+    <h1 class="page-title" style="margin-bottom:4px">玄学百科</h1>
+    <p class="page-subtitle">周易 · 五行 · 干支 · 奇门 · 梅花 · 紫微 · 面相 · 更多</p>
+</div>
 
-<div class="search-bar">
+<div class="search-bar" style="margin: 24px 0">
     <form action="/search" method="GET" style="display:flex;gap:8px;width:100%">
-        <input class="form-input" type="text" name="q" placeholder="搜索玄学百科..." style="flex:1">
-        <button type="submit" class="btn btn-primary">搜索</button>
+        <input class="form-input" type="text" name="q" placeholder="搜索玄学百科中的所有内容..."
+               style="flex:1;height:48px;font-size:1rem;border-radius:12px">
+        <button type="submit" class="btn btn-primary" style="border-radius:12px;padding:0 24px;font-size:1rem">搜索</button>
     </form>
 </div>
 
-<div class="encyclopedia-grid mt-16">
-    {% set icons = {
-        '周易': '☯', '五行': '⭐', '天干地支': '📅', '奇门遁甲': '🚪',
-        '梅花易数': '🌸', '面相手相': '👤', '紫微斗数': '🔮', '太乙神数': '🌌',
-        '择日学': '📆', '姓名学': '✏️', '周公解梦': '💤', '符箓文化': '📜',
-        '道家养生': '🧘'
-    } %}
+{% set cat_meta = {
+    '周易':       {'icon': '☯', 'desc': '群经之首，大道之源。六十四卦的哲学体系与占筮方法。', 'color': '#c9a96e'},
+    '五行':       {'icon': '⭐', 'desc': '金木水火土的生克制化，中国传统哲学的核心思维模型。', 'color': '#e03030'},
+    '天干地支':   {'icon': '📅', 'desc': '十天干与十二地支，六十甲子纪时系统与数理奥秘。', 'color': '#4dd0e1'},
+    '奇門遁甲':   {'icon': '🚪', 'desc': '三式之一，帝王之术。八门九星八神的时空推演。', 'color': '#7986cb'},
+    '梅花易數':   {'icon': '🌸', 'desc': '邵康节所创的灵动占法，万物皆可起卦的智慧。', 'color': '#f48fb1'},
+    '紫微斗數':   {'icon': '🔮', 'desc': '群星列宿，十二宫位。十四主星主宰的人生图谱。', 'color': '#ce93d8'},
+    '太乙神數':   {'icon': '🌌', 'desc': '三式之首，推算国运天灾的至高预测术。', 'color': '#90a4ae'},
+    '面相手相':   {'icon': '👤', 'desc': '五官十二宫三停论命，从面相掌纹解读人生密码。', 'color': '#a1887f'},
+    '擇日學':     {'icon': '📆', 'desc': '黄道吉日与神煞宜忌，在最佳时机行事的古老智慧。', 'color': '#ffb74d'},
+    '姓名學':     {'icon': '✏️', 'desc': '名字中的五行数理。五格剖象与三才配置之法。', 'color': '#4db6ac'},
+    '周公解夢':   {'icon': '💤', 'desc': '梦境的象征密码。天地人三界在睡梦中的信息传递。', 'color': '#64b5f6'},
+    '符籙文化':   {'icon': '📜', 'desc': '道教沟通神人的神秘符号，符头符胆符脚的构造体系。', 'color': '#ffcc80'},
+    '道家養生':   {'icon': '🧘', 'desc': '道法自然的养生哲学。子午流注、八段锦、五禽戏与食养。', 'color': '#81c784'},
+} %}
+
+<div class="encyclopedia-grid">
     {% for cat in categories %}
-    <a href="/encyclopedia/{{ cat }}" class="encyclopedia-card">
-        <h3>{{ icons.get(cat, '📄') }} {{ cat }}</h3>
-        <p>点击查看详情</p>
+    {% set meta = cat_meta.get(cat, {'icon': '📄', 'desc': '', 'color': '#888'}) %}
+    <a href="/encyclopedia/{{ cat }}" class="enc-card" style="border-top: 3px solid {{ meta.color }}">
+        <div class="enc-card-icon">{{ meta.icon }}</div>
+        <h3 class="enc-card-title">{{ cat }}</h3>
+        <p class="enc-card-desc">{{ meta.desc }}</p>
+        <div class="enc-card-footer">
+            <span>{{ meta.desc[:16] }}...</span>
+            <span class="enc-card-arrow">→</span>
+        </div>
     </a>
     {% endfor %}
 </div>

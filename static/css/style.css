@@ -593,3 +593,278 @@ body{
     animation:spin 0.8s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   玄学百科 — 文章式排版
+   ============================================================ */
+
+/* --- 分类卡片网格 --- */
+.encyclopedia-hero{
+    text-align:center;
+    padding:20px 0 4px;
+}
+.encyclopedia-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+    gap:14px;
+    margin:20px 0;
+}
+.enc-card{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:var(--card-bg);
+    border-radius:var(--radius-lg);
+    padding:18px 14px 14px;
+    text-decoration:none;
+    transition:transform 0.2s,box-shadow 0.2s;
+    cursor:pointer;
+    border-top:3px solid transparent;
+}
+.enc-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 24px rgba(0,0,0,0.3);
+}
+.enc-card-icon{font-size:2rem;line-height:1.2}
+.enc-card-title{
+    font-size:1.05rem;
+    color:var(--moon-white);
+    font-weight:bold;
+    margin:0;
+}
+.enc-card-desc{
+    font-size:0.78rem;
+    color:var(--text-light);
+    line-height:1.5;
+    flex:1;
+    margin:0;
+}
+.enc-card-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:0.72rem;
+    color:var(--text-light);
+    opacity:0.7;
+}
+.enc-card-arrow{font-size:1rem}
+
+/* --- 主题页 Header --- */
+.topic-header{
+    padding:8px 0 16px;
+}
+.back-link{
+    display:inline-block;
+    color:var(--text-light);
+    text-decoration:none;
+    font-size:0.85rem;
+    margin-bottom:12px;
+    transition:color 0.2s;
+}
+.back-link:hover{color:var(--gold)}
+.topic-title{
+    font-size:1.8rem;
+    color:var(--moon-white);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:4px 0 0;
+}
+.topic-icon{font-size:2rem}
+
+/* --- 目录导航 (TOC) --- */
+.toc{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:14px 18px;
+    margin:0 0 28px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+}
+.toc-title{
+    font-weight:bold;
+    color:var(--gold);
+    font-size:0.85rem;
+    flex-shrink:0;
+}
+.toc-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+}
+.toc-link{
+    display:inline-block;
+    padding:3px 12px;
+    border-radius:14px;
+    font-size:0.8rem;
+    color:var(--text-light);
+    text-decoration:none;
+    background:rgba(255,255,255,0.04);
+    transition:all 0.2s;
+}
+.toc-link:hover,.toc-link.active{
+    background:var(--gold);
+    color:var(--bg);
+}
+
+/* --- 文章正文 --- */
+.article-body{
+    max-width:720px;
+    margin:0 auto;
+    font-family:"SimSun","FangSong","KaiTi","Noto Serif SC",serif;
+}
+.article-section{
+    margin-bottom:36px;
+    scroll-margin-top:20px;
+}
+.section-title{
+    font-size:1.25rem;
+    color:var(--moon-white);
+    margin:0 0 16px;
+    padding-left:12px;
+    border-left:4px solid var(--gold);
+    line-height:1.4;
+}
+.article-text{
+    font-size:1rem;
+    line-height:2.2;
+    color:var(--text);
+    margin:0 0 14px;
+    text-align:justify;
+}
+.article-text p{
+    margin:0 0 14px;
+}
+.article-text p:last-child{margin-bottom:0}
+
+/* 列表 */
+.article-list{
+    padding-left:20px;
+    margin:0 0 16px;
+    line-height:2.2;
+    color:var(--text);
+    font-size:0.95rem;
+}
+.article-list li{margin-bottom:4px}
+
+/* --- 数据表格 --- */
+.data-table-wrap{
+    overflow-x:auto;
+    margin:12px 0 20px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+}
+.data-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.9rem;
+}
+.data-table thead th{
+    background:rgba(201,169,110,0.1);
+    color:var(--gold);
+    padding:10px 14px;
+    text-align:left;
+    font-weight:bold;
+    font-size:0.85rem;
+    white-space:nowrap;
+}
+.data-table tbody td{
+    padding:9px 14px;
+    border-top:1px solid var(--border);
+    color:var(--text);
+    line-height:1.7;
+    vertical-align:top;
+}
+.data-table .table-key{
+    color:var(--moon-white);
+    font-weight:bold;
+    white-space:nowrap;
+    width:1%;
+    font-size:0.9rem;
+}
+.data-table tbody tr:hover{background:rgba(255,255,255,0.02)}
+
+/* --- 小节卡片 --- */
+.section-cards{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin:12px 0 20px;
+}
+.section-card{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+}
+.section-card .card-heading{
+    font-size:1rem;
+    color:var(--moon-white);
+    margin:0 0 10px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.section-card .card-body{
+    font-size:0.92rem;
+    line-height:2;
+    color:var(--text);
+}
+.section-card .card-body p{
+    margin:0 0 10px;
+}
+.section-card .card-body p:last-child{margin-bottom:0}
+
+/* 内嵌小表 */
+.mini-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.87rem;
+}
+.mini-table td{
+    padding:5px 10px;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+    vertical-align:top;
+    line-height:1.7;
+}
+.mini-table .mini-key{
+    color:var(--gold);
+    font-weight:bold;
+    white-space:nowrap;
+    width:1%;
+}
+
+/* --- 响应式 --- */
+@media (max-width:768px){
+    .encyclopedia-grid{
+        grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+        gap:10px;
+    }
+    .enc-card{padding:14px 12px 12px}
+    .enc-card-icon{font-size:1.6rem}
+    .enc-card-title{font-size:0.95rem}
+    .enc-card-desc{font-size:0.72rem}
+
+    .topic-title{font-size:1.4rem}
+    .article-body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif}
+    .article-text{font-size:0.95rem;line-height:2;text-align:left}
+    .section-title{font-size:1.1rem}
+
+    .toc{padding:10px 14px;gap:6px}
+    .toc-link{font-size:0.75rem;padding:3px 10px}
+
+    .data-table{font-size:0.8rem}
+    .data-table thead th,
+    .data-table tbody td{padding:7px 10px}
+
+    .section-card{padding:12px 14px}
+    .section-card .card-heading{font-size:0.9rem}
+    .section-card .card-body{font-size:0.85rem}
+}
+
+@media (min-width:1024px){
+    /* 桌面端文章区域可稍窄 */
+    .article-body{max-width:720px;font-size:1.05rem}
+}

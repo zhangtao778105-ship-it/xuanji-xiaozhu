@@ -229,17 +229,16 @@ def encyclopedia_page():
 
 @app.route('/encyclopedia/<topic>')
 def encyclopedia_topic(topic):
-    # 尝试作为分类
+    # 尝试作为分类 → 使用文章式模板
     cat = encyclopedia.get_category(topic)
     if cat:
-        return render_template('search.html',
+        return render_template('encyclopedia_topic.html',
                                site_title=config.SITE_TITLE,
                                priest_name=config.PRIEST_NAME,
                                topic=topic,
-                               content=cat,
-                               results=None)
+                               content=cat)
 
-    # 尝试搜索
+    # 尝试搜索 → 仍用搜索模板
     results = encyclopedia.search(topic)
     return render_template('search.html',
                            site_title=config.SITE_TITLE,
