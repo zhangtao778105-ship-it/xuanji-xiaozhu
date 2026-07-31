@@ -124,6 +124,40 @@ def _birthday_fortune(d):
     }
 
 
+def _special_fortune(d):
+    """指定吉日：8月6日、8月8日——当日运势为「上」，取泰卦吉象"""
+    _load()
+    gz_str, gz_idx = daily_ganzhi(d)
+
+    # 取泰卦（地天泰，天地交泰吉象）
+    entry = _HEX_BY_NAME.get("泰")
+    if entry:
+        hex_key, hex_data = entry
+    else:
+        hex_data, hex_key = list(_HEXAGRAMS.items())[0]
+
+    return {
+        "date": d.isoformat(),
+        "day_ganzhi": gz_str,
+        "hexagram": hex_data,
+        "hexagram_key": hex_key,
+        "level": "上",
+        "fortune": (
+            "今日泰卦当值，天地交泰，万物通泰。"
+            "阳气升而阴气降，阴阳和合，百事顺遂，所求皆通。"
+            "宜把握良机，积极进取，贵人自至，事半功倍。"
+            "谨记持守正道，谦和待人，福泽绵长。"
+        ),
+        "yi": "宜：积极进取、把握机遇、签约合作、拜访贵人、开创新局",
+        "ji": "忌：犹豫观望、错失良机、冒进冲动、与人争执",
+        "lucky_colors": ["红色", "黄色", "橙色"],
+        "direction": _direction_guidance(hex_data, 0),
+        "da_xiang": hex_data.get("da_xiang_ci", ""),
+        "gua_ci": hex_data.get("gua_ci", ""),
+        "variant_idx": 0,
+    }
+
+
 def daily_fortune(d=None):
     """生成每日综合运势（含宜/忌/幸运颜色）
 
@@ -138,6 +172,10 @@ def daily_fortune(d=None):
     # 生日彩蛋：每年7月12日必定上吉
     if d.month == 7 and d.day == 12:
         return _birthday_fortune(d)
+
+    # 指定吉日：8月6日、8月8日——运势提升为「上」
+    if d.month == 8 and d.day in (6, 8):
+        return _special_fortune(d)
 
     hex_data, key = daily_hexagram(d)
     gz_str, gz_idx = daily_ganzhi(d)
