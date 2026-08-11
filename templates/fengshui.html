@@ -64,6 +64,7 @@
     <div class="card-title">形法风水 — 龙穴砂水向</div>
     {% for key, info in xingfa.items() %}
     {% if key != '概述' %}
+    {% if info is mapping and 'description' in info %}
     <div class="accordion">
         <button class="accordion-header">{{ info.name }} — {{ info.description[:40] }}...</button>
         <div class="accordion-body">
@@ -71,6 +72,16 @@
             <p style="color:var(--gold);margin-top:8px">{{ info.口诀 }}</p>
         </div>
     </div>
+    {% else %}
+    <div class="accordion">
+        <button class="accordion-header">{{ key }}（共 {{ info.items() | length }} 类）</button>
+        <div class="accordion-body">
+            {% for sub, subtext in info.items() %}
+            <p><strong style="color:var(--gold)">{{ sub }}</strong>：{{ subtext }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     {% endif %}
     {% endfor %}
 </div>

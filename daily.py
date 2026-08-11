@@ -23,15 +23,16 @@ _TRIGRAM_DIR = {
     "震": {"direction": "东",   "wuxing": "木", "nature": "雷", "symbol": "☳"},
     "巽": {"direction": "东南", "wuxing": "木", "nature": "风", "symbol": "☴"},
     "坎": {"direction": "北",   "wuxing": "水", "nature": "水", "symbol": "☵"},
-    "離": {"direction": "南",   "wuxing": "火", "nature": "火", "symbol": "☲"},
+    "离": {"direction": "南",   "wuxing": "火", "nature": "火", "symbol": "☲"},
     "艮": {"direction": "东北", "wuxing": "土", "nature": "山", "symbol": "☶"},
-    "兌": {"direction": "西",   "wuxing": "金", "nature": "泽", "symbol": "☱"},
+    "兑": {"direction": "西",   "wuxing": "金", "nature": "泽", "symbol": "☱"},
 }
 
 _HEXAGRAMS = None
 _DAILY_FORTUNES = None
 _HEX_BY_ID = None
 _HEX_BY_NAME = None
+_QUOTES = None
 
 
 def _today():
@@ -45,7 +46,7 @@ def _today():
 
 def _load():
     """懒加载数据文件，建立索引"""
-    global _HEXAGRAMS, _DAILY_FORTUNES, _HEX_BY_ID, _HEX_BY_NAME
+    global _HEXAGRAMS, _DAILY_FORTUNES, _HEX_BY_ID, _HEX_BY_NAME, _QUOTES
     if _HEXAGRAMS is None:
         _HEXAGRAMS = load_json('hexagrams.json')
         _HEX_BY_ID = {}
@@ -58,6 +59,11 @@ def _load():
             _DAILY_FORTUNES = load_json('daily_fortunes.json')
         except Exception:
             _DAILY_FORTUNES = []
+    if _QUOTES is None:
+        try:
+            _QUOTES = load_json('priest_quotes.json')
+        except Exception:
+            _QUOTES = []
 
 
 def daily_hexagram(d=None):
@@ -88,6 +94,17 @@ def daily_ganzhi(d=None):
     return gan + zhi, gz_idx
 
 
+def daily_quote(d=None):
+    """每日固定抽取一句凤年真人寄语（与当日卦象同源的日期哈希，同一天固定）"""
+    if d is None:
+        d = _today()
+    _load()
+    if not _QUOTES:
+        return ""
+    idx = int(hashlib.md5(d.isoformat().encode()).hexdigest(), 16) % len(_QUOTES)
+    return _QUOTES[idx]
+
+
 def _birthday_fortune(d):
     """生日彩蛋：7月12日——乾卦上吉，专属运势"""
     _load()
@@ -114,12 +131,13 @@ def _birthday_fortune(d):
             "今日宜开怀畅饮，与所爱之人共度良辰。"
             "生日快乐——凤年真人稽首。"
         ),
-        "yi": "宜：庆祝生辰开怀畅饮展望未来许下心愿陪伴家人朋友欢聚享用美味",
-        "ji": "忌：妄自菲薄忧愁焦虑辜负良辰美景",
+        "yi": "庆祝生辰、开怀畅饮、展望未来、许下心愿、陪伴家人、欢聚一堂",
+        "ji": "妄自菲薄、忧愁焦虑、辜负良辰",
         "lucky_colors": ["金色", "红色", "紫色"],
         "direction": _direction_guidance(hex_data, 0),
         "da_xiang": hex_data.get("da_xiang_ci", ""),
         "gua_ci": hex_data.get("gua_ci", ""),
+        "quote": daily_quote(d),
         "variant_idx": 0,
     }
 
@@ -148,12 +166,13 @@ def _special_fortune(d):
             "宜把握良机，积极进取，贵人自至，事半功倍。"
             "谨记持守正道，谦和待人，福泽绵长。"
         ),
-        "yi": "宜：积极进取、把握机遇、签约合作、拜访贵人、开创新局",
-        "ji": "忌：犹豫观望、错失良机、冒进冲动、与人争执",
+        "yi": "积极进取、把握机遇、签约合作、拜访贵人、开创新局",
+        "ji": "犹豫观望、错失良机、冒进冲动、与人争执",
         "lucky_colors": ["红色", "黄色", "橙色"],
         "direction": _direction_guidance(hex_data, 0),
         "da_xiang": hex_data.get("da_xiang_ci", ""),
         "gua_ci": hex_data.get("gua_ci", ""),
+        "quote": daily_quote(d),
         "variant_idx": 0,
     }
 
@@ -216,6 +235,7 @@ def daily_fortune(d=None):
         "direction": direction,
         "da_xiang": da_xiang,
         "gua_ci": gua_ci,
+        "quote": daily_quote(d),
         "variant_idx": variant_idx,
     }
 
@@ -485,21 +505,21 @@ def _judge_level(gua_name):
     - 下    8卦 (12.5%)  — 有阻但可化解
     - 凶    6卦 ( 9.4%)  — 困厄需谨慎
     """
-    shangji = {"乾", "坤", "泰", "大有", "謙", "復", "益", "既濟"}
+    shangji = {"乾", "坤", "泰", "大有", "谦", "复", "益", "既济"}
     shang = {
-        "比", "履", "同人", "豫", "臨", "觀", "大畜", "咸",
-        "恆", "晉", "家人", "中孚",
+        "比", "履", "同人", "豫", "临", "观", "大畜", "咸",
+        "恒", "晋", "家人", "中孚",
     }
     zhongshang = {
-        "屯", "需", "小畜", "隨", "賁", "无妄", "頤", "離",
-        "大壯", "解", "損", "萃", "升", "鼎", "豐", "兌",
+        "屯", "需", "小畜", "随", "贲", "无妄", "颐", "离",
+        "大壮", "解", "损", "萃", "升", "鼎", "丰", "兑",
     }
     ping = {
-        "蒙", "訟", "師", "蠱", "噬嗑", "大過", "遯", "睽",
-        "夬", "姤", "井", "漸", "巽", "節",
+        "蒙", "讼", "师", "蛊", "噬嗑", "大过", "遁", "睽",
+        "夬", "姤", "井", "渐", "巽", "节",
     }
-    xia = {"否", "剝", "坎", "明夷", "蹇", "艮", "旅", "小過"}
-    xiong = {"困", "革", "震", "歸妹", "渙", "未濟"}
+    xia = {"否", "剥", "坎", "明夷", "蹇", "艮", "旅", "小过"}
+    xiong = {"困", "革", "震", "归妹", "涣", "未济"}
 
     if gua_name in shangji:
         return "上吉"

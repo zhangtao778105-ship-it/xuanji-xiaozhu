@@ -868,3 +868,19 @@ body{
     /* 桌面端文章区域可稍窄 */
     .article-body{max-width:720px;font-size:1.05rem}
 }
+
+/* --- 每日运势：宜项打卡 --- */
+.todo-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.todo-item{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:22px;border:1px solid rgba(76,175,80,0.35);background:rgba(76,175,80,0.07);color:var(--text);cursor:pointer;user-select:none;transition:all 0.2s;font-size:0.9rem}
+.todo-item:active{transform:scale(0.95)}
+.todo-circle{width:19px;height:19px;border-radius:50%;border:2px solid rgba(76,175,80,0.75);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.todo-circle::after{content:''}
+.todo-item.todo-done{background:rgba(76,175,80,0.2);border-color:#4caf50}
+.todo-item.todo-done .todo-circle{background:#4caf50;border-color:#4caf50}
+.todo-item.todo-done .todo-circle::after{content:'✓';color:#fff;font-size:12px;font-weight:bold}
+.todo-item.todo-done .todo-item-text{text-decoration:line-through;color:var(--text-light)}
+
+/* --- 每日运势：凤年真人寄语 --- */
+.quote-card{border:1px solid rgba(255,215,0,0.25);background:linear-gradient(135deg,rgba(255,215,0,0.07),rgba(255,215,0,0.02))}
+.quote-text{font-size:1.05rem;line-height:1.9;color:var(--moon-white);font-style:italic;margin:6px 0 4px;padding:0 4px}
+.quote-author{text-align:right;color:var(--gold);font-size:0.85rem;margin-top:4px}
