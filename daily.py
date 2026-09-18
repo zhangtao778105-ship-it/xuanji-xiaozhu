@@ -36,12 +36,24 @@ _QUOTES = None
 
 
 def _today():
-    """返回时区感知的今日日期（解决 PythonAnywhere UTC 时区问题）"""
+    """返回时区感知的今日日期（子时换日：23:00后算次日）
+    
+    中国传统历法以子时（23:00-01:00）为一天的开始。
+    因此当北京时间 >= 23:00 时，返回明天的日期。
+    """
     try:
         tz = ZoneInfo(TIMEZONE)
     except Exception:
         tz = ZoneInfo("Asia/Shanghai")
-    return datetime.now(tz).date()
+    
+    now = datetime.now(tz)
+    
+    # 子时换日：23:00 之后算次日
+    if now.hour >= 23:
+        from datetime import timedelta
+        return (now + timedelta(days=1)).date()
+    
+    return now.date()
 
 
 def _load():
