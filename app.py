@@ -20,6 +20,7 @@ import liuren
 import fengshui
 import encyclopedia
 import priest
+import jieqi_utils
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'xuanji-xiaozhu-2026'
@@ -31,10 +32,16 @@ app.config['SECRET_KEY'] = 'xuanji-xiaozhu-2026'
 @app.route('/')
 def index():
     greeting = priest.greet()
+
+    # 获取节气信息（只在节气当天显示）
+    jieqi_data = jieqi_utils.get_current_jieqi()
+    jieqi_card = jieqi_utils.format_jieqi_card(jieqi_data)
+
     return render_template('index.html',
                            site_title=config.SITE_TITLE,
                            priest_name=config.PRIEST_NAME,
-                           greeting=greeting)
+                           greeting=greeting,
+                           jieqi=jieqi_card)
 
 
 # ============================================================
