@@ -7,6 +7,48 @@
     <div class="priest-sign">— {{ priest_name }} 稽首</div>
 </div>
 
+<!-- 节气卡片（仅在节气当天显示） -->
+{% if jieqi %}
+<div class="card mt-16 fade-in" style="
+    background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04));
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 20px rgba(255,215,0,0.15);
+">
+    <div class="card-title" style="color: var(--gold); font-size: 1.3rem;">
+        {{ jieqi.title }}
+    </div>
+
+    <div style="text-align: center; margin: 16px 0;">
+        <div style="font-size: 3rem; margin: 8px 0;">{{ jieqi.emoji }}</div>
+        <div style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8;">
+            {{ jieqi.greeting }}
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,215,0,0.2);">
+        <div style="margin-bottom: 12px;">
+            <span style="color: var(--gold); font-weight: bold;">🌿 养生建议：</span>
+            <span style="color: var(--text);">{{ jieqi.health }}</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <span style="color: var(--gold); font-weight: bold;">✨ 开运指引：</span>
+            <span style="color: var(--text);">{{ jieqi.fortune }}</span>
+        </div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;">
+            <span class="badge" style="background: var(--gold); color: #1a1a1a;">
+                {{ jieqi.wuxing }}气当令
+            </span>
+            <span class="badge" style="background: var(--gold); color: #1a1a1a;">
+                吉方：{{ jieqi.direction }}
+            </span>
+            <span class="badge" style="background: var(--gold); color: #1a1a1a;">
+                幸运色：{{ jieqi.color }}
+            </span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="menu-grid mt-24">
     <a href="/iching" class="menu-item fade-in">
         <span class="icon">🪙</span>
