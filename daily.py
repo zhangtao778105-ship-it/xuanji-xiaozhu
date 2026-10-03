@@ -13,7 +13,7 @@ import hashlib
 import re
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
-from utils import load_json, TIANGAN, DIZHI
+from utils import load_json, TIANGAN, DIZHI, xuanji_date
 from config import TIMEZONE
 
 # 八卦方位五行映射
@@ -36,24 +36,8 @@ _QUOTES = None
 
 
 def _today():
-    """返回时区感知的今日日期（子时换日：23:00后算次日）
-    
-    中国传统历法以子时（23:00-01:00）为一天的开始。
-    因此当北京时间 >= 23:00 时，返回明天的日期。
-    """
-    try:
-        tz = ZoneInfo(TIMEZONE)
-    except Exception:
-        tz = ZoneInfo("Asia/Shanghai")
-    
-    now = datetime.now(tz)
-    
-    # 子时换日：23:00 之后算次日
-    if now.hour >= 23:
-        from datetime import timedelta
-        return (now + timedelta(days=1)).date()
-    
-    return now.date()
+    """返回统一的玄机日期：北京时间 23:00 后按子时规则算次日。"""
+    return xuanji_date()
 
 
 def _load():
