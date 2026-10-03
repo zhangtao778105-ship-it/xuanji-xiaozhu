@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """节气工具模块 - 计算节气、养生建议、开运提示"""
 
-from datetime import date, timedelta
+from datetime import date
+
+from utils import xuanji_date
 
 # 24节气数据（简化版：使用近似日期）
 # 实际节气时间每年略有浮动，这里取常见日期
@@ -232,7 +234,7 @@ def get_current_jieqi(d=None):
     }
     """
     if d is None:
-        d = date.today()
+        d = xuanji_date()
 
     year = d.year
 
