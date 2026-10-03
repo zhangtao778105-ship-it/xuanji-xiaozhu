@@ -5,9 +5,31 @@ import sys
 import io
 import json
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
+
+from config import TIMEZONE
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+
+
+def xuanji_date(now=None):
+    """返回统一的玄机日期：北京时间 23:00 后按子时规则算次日。"""
+    try:
+        tz = ZoneInfo(TIMEZONE)
+    except Exception:
+        tz = ZoneInfo("Asia/Shanghai")
+
+    if now is None:
+        now = datetime.now(tz)
+    elif now.tzinfo is None:
+        now = now.replace(tzinfo=tz)
+    else:
+        now = now.astimezone(tz)
+
+    if now.hour >= 23:
+        return (now + timedelta(days=1)).date()
+    return now.date()
 
 
 def fix_encoding():
