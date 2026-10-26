@@ -34,3 +34,13 @@ data/lot_expansions.py
 # 腾讯云 SCF 部署文件（Render 不需要）
 scf_bootstrap
 scf_deps/
+
+# 运行时日志（由 startup.bat 追加写入，不入库）
+server.log
+*.log
+
+# 本地图标源图（成品尺寸图标已提交，此 2048×2048 源图仅本地保留）
+static/img/icon.png
+
+# 历史部署包（勿再提交）
+static/xuanji-xiaozhu.zip

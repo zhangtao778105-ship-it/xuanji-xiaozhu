@@ -2,11 +2,13 @@
 """玄机小筑 — Flask主入口，路由注册，启动逻辑"""
 
 import sys
-import io
 import os
 
-# 修复 Windows 终端 UTF-8 编码
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+# 修复 Windows 终端 UTF-8 编码（重定向到文件/被 WSGI 导入时也可能生效，失败则忽略）
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from datetime import date, datetime

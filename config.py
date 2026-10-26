@@ -12,7 +12,9 @@ except ImportError:
 
 # 服务配置
 HOST = "0.0.0.0"
-PORT = 9000  # SCF Web Function 要求 9000 端口
+# 端口：默认 9090（本地 / Docker / fly.io / natapp 隧道一致）
+# 腾讯云 SCF 要求监听 9000，部署时用 PORT=9000 覆盖（见 scf_bootstrap）
+PORT = int(os.environ.get("PORT", "9090"))
 DEBUG = False
 
 # 项目路径

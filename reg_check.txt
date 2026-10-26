@@ -1,1 +1,0 @@
-wscript.exe //B "D:\.ab工具\divination\launch.vbs"
