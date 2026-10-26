@@ -138,6 +138,14 @@ def _birthday_fortune(d):
     }
 
 
+# 指定吉日：(年, 月, 日) → 卦名
+# 按该卦走普通运势流程（文案/宜忌/幸运色/方位均按卦象标准生成），不写专属文案；
+# 未列出的日期仍按日期哈希取卦。只影响指定年份的这一天。
+_LUCKY_DATE_HEXAGRAMS = {
+    (2026, 11, 6): "谦",  # 上吉
+}
+
+
 def _special_fortune(d):
     """指定吉日：8月6日、8月8日——当日运势为「上」，取泰卦吉象"""
     _load()
@@ -194,6 +202,14 @@ def daily_fortune(d=None):
 
     hex_data, key = daily_hexagram(d)
     gz_str, gz_idx = daily_ganzhi(d)
+
+    # 指定吉日：换用指定吉卦，其余照常按普通流程生成
+    lucky_name = _LUCKY_DATE_HEXAGRAMS.get((d.year, d.month, d.day))
+    if lucky_name:
+        _load()
+        entry = _HEX_BY_NAME.get(lucky_name)
+        if entry:
+            key, hex_data = entry
 
     if not hex_data:
         return {"error": "无法获取今日卦象"}
