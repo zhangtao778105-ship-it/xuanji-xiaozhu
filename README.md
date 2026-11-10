@@ -25,8 +25,22 @@ python app.py
   - Start Command：`gunicorn app:app --bind 0.0.0.0:$PORT`
   - Render 监听 `main` 分支，本地推送需同时更新 `master` 和 `main`
   - 账号注意：Render 绑定账号需为仓库 collaborator，auto-deploy 才能触发
-- 环境变量：`DEEPSEEK_API_KEY`、`CACHE_DIR=/tmp/cache`（可选 `AI_API_ENABLED`、`AI_API_MODEL`、`AI_CACHE_TTL_DAYS`）
+- 环境变量：`DEEPSEEK_API_KEY`、`CACHE_DIR=/tmp/cache`（可选 `AI_API_ENABLED`、`AI_API_MODEL`、`AI_CACHE_TTL_DAYS`、`AI_API_TIMEOUT`、`AI_API_MAX_RETRIES`）
 - 其他部署方式：腾讯云 SCF（要求 9000 端口，部署包内 `scf_bootstrap` 已设 `PORT=9000`）、fly.io（`fly.toml`，internal_port 9090）、Dockerfile（EXPOSE 9090）
+
+## 可用性：免费实例休眠与保活
+
+Render 免费 Web Service 在 15 分钟无访问后休眠，下一次访问需 30–60 秒冷启动（期间返回 503 “Application loading”）。当前缓解措施：
+
+- 仓库内 `.github/workflows/keep-alive.yml` 每 5 分钟请求一次 `/healthz` 保活（公共仓库 Actions 免费）
+- 免费额度 750 实例小时/月：全天保活约 720–744 小时/月，仍在上限内；请在 Render 面板留意 Instance hours
+- ⚠️ GitHub 会停用 60 天无提交仓库的定时工作流，需手动 "Enable workflow"；需要正式宕机告警时另配 UptimeRobot 等监控（探测 `/healthz` 即可）
+- `/healthz` 返回轻量 JSON 健康状态，不加载业务数据，适合任何监控/探针
+
+## 并发与 AI 超时
+
+- `gunicorn.conf.py`：1 worker × 8 threads（gthread），AI/网络等待不会阻塞其他访客（Render 启动命令无需改动，gunicorn 会自动加载该文件）
+- `ai_interpreter.py`：OpenAI 客户端默认 `timeout=30s`、`max_retries=0`，可用环境变量 `AI_API_TIMEOUT` / `AI_API_MAX_RETRIES` 调整；超时或失败自动降级为静态文案
 
 ## 特殊日期
 

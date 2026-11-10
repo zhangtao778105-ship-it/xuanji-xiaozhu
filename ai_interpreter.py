@@ -134,9 +134,15 @@ class AIInterpreter:
             self._enabled = False
             return
 
+        # 超时与重试：DeepSeek 卡住时必须尽快降级，避免阻塞 Gunicorn worker 拖垮全站
         try:
             from openai import OpenAI
-            self._client = OpenAI(api_key=api_key, base_url=DEEPSEEK_BASE_URL)
+            self._client = OpenAI(
+                api_key=api_key,
+                base_url=DEEPSEEK_BASE_URL,
+                timeout=float(os.environ.get("AI_API_TIMEOUT", "30")),
+                max_retries=int(os.environ.get("AI_API_MAX_RETRIES", "0")),
+            )
             self._enabled = True
         except ImportError:
             print("[AI] openai 库未安装，AI 功能不可用。pip install openai")
